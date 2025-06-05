@@ -1,13 +1,8 @@
-# run.py
 from app import create_app, db
 import os
 
 app = create_app()
 
-# Kjo pjesë do të ekzekutohet vetëm gjatë zhvillimit lokal
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
-
-    port = int(os.environ.get('PORT', 5001))  
+    port = int(os.environ.get('PORT', 10000))  # Render përdor portin 10000 si default
     app.run(host='0.0.0.0', port=port)

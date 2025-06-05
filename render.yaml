@@ -1,0 +1,9 @@
+services:
+  - type: web
+    name: Rent_A_CAR
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn run:app"
+    envVars:
+      - key: PORT
+        value: 10000

@@ -1,0 +1,195 @@
+{% extends "main/base.html" %}
+{% block title %}
+    {% if session['lang'] == 'mk' %}Дома - Рент а Кар{% elif session['lang'] == 'en' %}Home - Rent a Car{% else %}Ballina - Rent a Car{% endif %}
+{% endblock %}
+{% block content %}
+
+<div class="container py-5">
+    <h1 class="text-center mb-5 fw-bold animate__animated animate__fadeInDown">
+        {% if session['lang'] == 'mk' %}
+            <span class="text-gradient">Најдобрите возила за вас</span>
+        {% elif session['lang'] == 'en' %}
+            <span class="text-gradient">The best cars for you</span>
+        {% else %}
+            <span class="text-gradient">Makinat më të mira për ju</span>
+        {% endif %}
+    </h1>
+
+    <div class="row g-4">
+        {% for car in cars %}
+        <div class="col-lg-4 col-md-6">
+            <div class="card h-100 shadow-lg border-0 overflow-hidden animate__animated animate__fadeInUp" style="animation-delay: {{ loop.index * 0.1 }}s;">
+                <div class="car-image-container">
+                    {% if car.images and car.images|length > 0 %}
+                        <img src="{{ url_for('static', filename='uploads/' ~ car.images[0].image_filename) }}" 
+                             class="card-img-top img-fluid car-image" 
+                             alt="{{ car.name }}"
+                             loading="lazy">
+                    {% else %}
+                        <img src="{{ url_for('static', filename='images/default_car.jpg') }}" 
+                             class="card-img-top img-fluid car-image" 
+                             alt="{{ car.name }}"
+                             loading="lazy">
+                    {% endif %}
+                    <div class="price-tag animate__animated animate__pulse animate__infinite animate__slower">
+                        {{ car.price_per_day }} €/{% if session['lang'] == 'mk' %}ден{% elif session['lang'] == 'en' %}day{% else %}ditë{% endif %}
+                    </div>
+                </div>
+                
+                <div class="card-body">
+                    <h3 class="card-title text-primary fw-bold">{{ car.brand }} {{ car.model }}</h3>
+                    
+                    <div class="car-specs mt-3">
+                        <div class="spec-item">
+                            <i class="fas fa-gas-pump text-primary"></i>
+                            <span>
+                                {% if session['lang'] == 'mk' %}
+                                    Гориво: 
+                                {% elif session['lang'] == 'en' %}
+                                    Fuel: 
+                                {% else %}
+                                    Karburanti: 
+                                {% endif %}
+                                <span class="badge 
+                                    {% if car.fuel_type == 'Benzin' or car.fuel_type == 'Petrol' or car.fuel_type == 'Бензин' %}bg-primary
+                                    {% elif car.fuel_type == 'Naftë' or car.fuel_type == 'Diesel' or car.fuel_type == 'Дизел' %}bg-success
+                                    {% else %}bg-secondary{% endif %}">
+                                    {{ car.fuel_type }}
+                                </span>
+                            </span>
+                        </div>
+                        
+                        <div class="spec-item">
+                            <i class="fas fa-tachometer-alt text-primary"></i>
+                            <span>
+                                {% if session['lang'] == 'mk' %}
+                                    Километража: {{ car.km_driven }} км
+                                {% elif session['lang'] == 'en' %}
+                                    Mileage: {{ car.km_driven }} km
+                                {% else %}
+                                    Kilometra: {{ car.km_driven }} km
+                                {% endif %}
+                            </span>
+                        </div>
+                        
+                        <div class="spec-item">
+                            <i class="fas fa-calendar-alt text-primary"></i>
+                            <span>
+                                {% if session['lang'] == 'mk' %}
+                                    Година: {{ car.production_year }}
+                                {% elif session['lang'] == 'en' %}
+                                    Year: {{ car.production_year }}
+                                {% else %}
+                                    Viti: {{ car.production_year }}
+                                {% endif %}
+                            </span>
+                        </div>
+                        
+                        {% if car.green_card_year %}
+                        <div class="spec-item">
+                            <i class="fas fa-leaf text-success"></i>
+                            <span class="badge bg-success">
+                                {% if session['lang'] == 'mk' %}
+                                    Зелена карта: {{ car.green_card_year }}
+                                {% elif session['lang'] == 'en' %}
+                                    Green card: {{ car.green_card_year }}
+                                {% else %}
+                                    Kartoni i gjelbër: {{ car.green_card_year }}
+                                {% endif %}
+                            </span>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="card-footer bg-transparent border-top-0 text-center">
+                    <a href="{{ url_for('main.car_detail', car_id=car.id) }}" 
+                       class="btn btn-primary btn-lg rounded-pill px-4 animate__animated animate__pulse animate__infinite animate__slower">
+                        {% if session['lang'] == 'mk' %}
+                            Резервирај
+                        {% elif session['lang'] == 'en' %}
+                            Book Now
+                        {% else %}
+                            Rezervo
+                        {% endif %}
+                        <i class="fas fa-arrow-right ms-2"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<style>
+    .text-gradient {
+        background: linear-gradient(90deg, #3498db, #2ecc71);
+        -webkit-background-clip: text;
+        background-clip: text;
+        color: transparent;
+        display: inline-block;
+    }
+    
+    .car-image-container {
+        position: relative;
+        overflow: hidden;
+        border-radius: 15px 15px 0 0;
+    }
+    
+    .car-image {
+        transition: transform 0.5s ease;
+        height: 220px;
+        object-fit: cover;
+    }
+    
+    .card:hover .car-image {
+        transform: scale(1.05);
+    }
+    
+    .price-tag {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background: rgba(52, 152, 219, 0.9);
+        color: white;
+        padding: 8px 15px;
+        border-radius: 20px;
+        font-weight: bold;
+        font-size: 1.1rem;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        z-index: 2;
+    }
+    
+    .car-specs {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+    
+    .spec-item {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        font-size: 0.95rem;
+    }
+    
+    .card {
+        transition: all 0.3s ease;
+        border-radius: 15px;
+        overflow: hidden;
+        border: none;
+    }
+    
+    .card:hover {
+        transform: translateY(-10px);
+        box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    }
+    
+    @media (max-width: 768px) {
+        .car-specs {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+{% endblock %}

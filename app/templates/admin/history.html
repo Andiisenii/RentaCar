@@ -1,0 +1,31 @@
+{% extends 'admin/base_admin.html' %}
+{% block content %}
+<h2 class="mb-4">Historiku i Rezervimeve dhe Fshirjeve</h2>
+
+<table class="table table-bordered table-striped">
+    <thead class="table-dark">
+        <tr>
+            <th>Makina</th>
+            <th>Klienti</th>
+            <th>Veprimi</th>
+            <th>Data</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for entry in history_entries %}
+        <tr>
+            <td>{{ entry.car.brand }} {{ entry.car.model }}</td>
+            <td>{{ entry.customer_name }}</td>
+            <td>
+                {% if entry.action == 'reserved' %}
+                    <span class="badge bg-success">Rezervim</span>
+                {% elif entry.action == 'deleted' %}
+                    <span class="badge bg-danger">Fshirje</span>
+                {% endif %}
+            </td>
+            <td>{{ entry.action_date.strftime('%Y-%m-%d %H:%M') }}</td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endblock %}

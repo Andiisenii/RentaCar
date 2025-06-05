@@ -1,0 +1,49 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block content %}
+<h2>Modifiko Rezervimin</h2>
+
+<form method="POST" action="{{ url_for('admin.edit_reservation', reservation_id=reservation.id) }}">
+    <div class="mb-3">
+        <label for="customer_name" class="form-label">Emri i Klientit</label>
+        <input type="text" class="form-control" id="customer_name" name="customer_name" required
+               value="{{ reservation.customer_name }}">
+    </div>
+
+    <div class="mb-3">
+        <label for="customer_email" class="form-label">Email</label>
+        <input type="email" class="form-control" id="customer_email" name="customer_email" required
+               value="{{ reservation.customer_email }}">
+    </div>
+
+    <div class="mb-3">
+        <label for="customer_phone" class="form-label">Nr. Telefoni</label>
+        <input type="text" class="form-control" id="customer_phone" name="customer_phone" required
+               value="{{ reservation.customer_phone }}">
+    </div>
+
+    <div class="mb-3">
+        <label for="start_date" class="form-label">Data Fillimit</label>
+        <input type="date" class="form-control" id="start_date" name="start_date" required
+               value="{{ reservation.start_date.strftime('%Y-%m-%d') }}">
+    </div>
+
+    <div class="mb-3">
+        <label for="end_date" class="form-label">Data Mbarimit</label>
+        <input type="date" class="form-control" id="end_date" name="end_date" required
+               value="{{ reservation.end_date.strftime('%Y-%m-%d') }}">
+    </div>
+
+    <div class="mb-3">
+        <label for="status" class="form-label">Statusi i Rezervimit</label>
+        <select class="form-select" id="status" name="status">
+            <option value="confirmed" {% if reservation.status == 'confirmed' %}selected{% endif %}>Konfirmuar</option>
+            <option value="cancelled" {% if reservation.status == 'cancelled' %}selected{% endif %}>Anuluar</option>
+            <option value="pending" {% if reservation.status == 'pending' %}selected{% endif %}>Në pritje</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Ruaj Ndryshimet</button>
+    <a href="{{ url_for('admin.view_reservations') }}" class="btn btn-secondary">Kthehu Mbrapa</a>
+</form>
+{% endblock %}

@@ -1,0 +1,33 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block content %}
+<h1>Dashboard</h1>
+
+<h3>Makinat</h3>
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Emri</th>
+            <th>Çmimi për ditë</th>
+            <th>Karburanti</th>
+            <th>Km të vozitura</th>
+            <th>Veprime</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for car in cars %}
+        <tr>
+            <td>{{ car.brand }}</td>
+            <td>{{ car.price_per_day }} €</td>
+            <td>{{ car.fuel_level }} %</td>
+            <td>{{ car.km_driven }} km</td>
+            <td>
+                <a href="{{ url_for('admin.edit_car', car_id=car.id) }}" class="btn btn-sm btn-warning">Edito</a>
+                <a href="{{ url_for('admin.delete_car', car_id=car.id) }}" class="btn btn-sm btn-danger" onclick="return confirm('A je i sigurt që don të fshish?');">Fshi</a>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+{% endblock %}

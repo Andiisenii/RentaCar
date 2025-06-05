@@ -1,0 +1,6 @@
+{% extends "main/base.html" %}
+{% block title %}Rreth Nesh{% endblock %}
+{% block content %}
+<h2>{% if session['lang'] == 'mk' %}За нашата компанија{% elif session['lang'] == 'en' %}About Our Company{% else %}Rreth Kompanisë{% endif %}</h2>
+<p>Lorem ipsum për përmbajtjen që do e shtosh më vonë.</p>
+{% endblock %}

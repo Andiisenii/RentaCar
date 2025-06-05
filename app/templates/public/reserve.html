@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>Rezervo makinë - {{ car.brand }} {{ car.model }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <h1>Rezervo: {{ car.brand }} {{ car.model }}</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }}">{{ message }}</div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
+    <f<form method="POST">
+        <label>Emri:</label><br>
+        <input type="text" name="customer_name" required><br>
+    
+        <label>Mbiemri:</label><br>
+        <input type="text" name="customer_surname" required><br>
+    
+        <label>Nr. i Leternjoftimit:</label><br>
+        <input type="text" name="customer_id_number" required minlength="13" maxlength="15"><br>
+    
+        <label>Nr. i Lejes së Drejtimit:</label><br>
+        <input type="text" name="customer_license_number" required><br>
+    
+        <label>Email:</label><br>
+        <input type="email" name="customer_email" required><br>
+    
+        <label>Numri i Telefonit:</label><br>
+        <input type="text" name="customer_phone" required><br>
+    
+        <label>Data fillimit:</label><br>
+        <input type="date" name="start_date" required><br>
+    
+        <label>Data përfundimit:</label><br>
+        <input type="date" name="end_date" required><br>
+    
+        <input type="submit" value="Rezervo">
+    </form>
+    
+
+    <p><a href="{{ url_for('public.home') }}">Kthehu te makinat</a></p>
+</body>
+</html>

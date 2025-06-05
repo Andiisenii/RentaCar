@@ -1,0 +1,7 @@
+{% extends "main/base.html" %}
+{% block title %}Kontakt{% endblock %}
+{% block content %}
+<h2>{% if session['lang'] == 'mk' %}Контактирајте не{% elif session['lang'] == 'en' %}Contact Us{% else %}Na Kontaktoni{% endif %}</h2>
+<p>Email: info@rentacar.com</p>
+<p>Tel: +38970916307</p>
+{% endblock %}

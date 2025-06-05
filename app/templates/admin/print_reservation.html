@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="mk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ДОГОВОР ЗА ИЗНАЈМУВАЊЕ НА ВОЗИЛО</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            line-height: 1.5;
+            color: #333;
+        }
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #000;
+            padding-bottom: 10px;
+        }
+        .contract-title {
+            text-align: center;
+            font-weight: bold;
+            font-size: 18px;
+            margin: 20px 0;
+            text-decoration: underline;
+        }
+        .section {
+            margin-bottom: 15px;
+        }
+        .section-title {
+            font-weight: bold;
+            margin: 15px 0 5px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 14px;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        .signature-area {
+            margin-top: 40px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .signature-box {
+            width: 45%;
+            border-top: 1px solid black;
+            padding-top: 5px;
+            text-align: center;
+        }
+        .fill-data {
+            text-decoration: underline;
+            font-weight: bold;
+            color: #0066cc;
+        }
+        .underline {
+            border-bottom: 1px solid #000;
+            display: inline-block;
+            min-width: 100px;
+        }
+        .no-print {
+            text-align: center;
+            margin-top: 20px;
+        }
+        .print-btn {
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #0066cc;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .print-btn:hover {
+            background-color: #0055aa;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        ul li {
+            margin-bottom: 5px;
+        }
+        @media print {
+            .no-print {
+                display: none;
+            }
+            body {
+                font-size: 12pt;
+            }
+            .fill-data {
+                color: #000;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <div><strong>RENT A CAR AUTOAGONI DOOEL</strong></div>
+    <div>ул.11-ти Ноември бр.144 Куманово</div>
+    <div>Tel: +389 70 916-307 / 070-560-173</div>
+    <div>e-mail: autoagoni@gmail.com</div>
+    <div>Kumanovo</div>
+</div>
+
+<div class="contract-title">ДОГОВОР ЗА ИЗНАЈМУВАЊЕ НА ВОЗИЛО</div>
+
+<div class="section">
+    <div>Дата на изд. <span class="fill-data underline">{{pickup_date}}</span> час: <span class="fill-data underline">{{pickup_time}}</span></div>
+    <div>Дата на враќ. <span class="fill-data underline">{{return_date}}</span> Час: <span class="fill-data underline">{{return_time}}</span></div>
+    <div>во Куманово помеѓу</div>
+</div>
+
+<div class="section">
+    <div><strong>ЗАКУПЕЦ:</strong></div>
+    <div>Физичко лице <span class="fill-data underline">{{customer_name}}</span> со ЕМБГ <span class="fill-data underline">{{customer_id}}</span></div>
+    <div>Возачка дозвола со бр. <span class="fill-data underline">{{license_number}}</span></div>
+</div>
+
+<div class="section">
+    <div><strong>ЗАКУПОДАВАЧ:</strong></div>
+    <div>Друштво за производство и трговија АУТОАГОНИ ДООЕЛ</div>
+    <div>Куманово, претставувано од Управителот <span class="fill-data underline">{{company_representative}}</span></div>
+</div>
+
+<div class="section">
+    <div>Закупецот на овој договор се согласува да го изнајми наведното патничко возило кое</div>
+    <div>Закуподавачот му го издава на Закупецот:</div>
+    
+    <table>
+        <tr>
+            <th>бр.</th>
+            <th>Марка на возило</th>
+            <th>Регистарски број</th>
+            <th>Број на шасија</th>
+        </tr>
+        <tr>
+            <td>1.</td>
+            <td class="fill-data">{{car_brand}}</td>
+            <td class="fill-data">{{license_plate}}</td>
+            <td class="fill-data">{{chassis_number}}</td>
+        </tr>
+    </table>
+</div>
+
+<div class="section-title">Член 1</div>
+<div class="section">
+    <div>Со потпишување на овој договор КОРИСНИКОТ свечено да го потпише договорот за
+    изнајмување и со тоа се согласува со одредбите од договорот дека:</div>
+    <ol type="a">
+        <li>Цените и другите услови од важечкиот ценовник ги прифаќа како составен дел
+        на договорот;</li>
+        <li>Дека возилото го прима во технички исправна состојба со целпт прибор и
+        документи и при примање на возилото ќе го потпише приемниот лист;</li>
+        <li>Дека ќе го врати возилото во договорениот рок кој е назначен на предната
+        страна од договорот на локацијата на СОПСТВЕНИКОТ на возилото;</li>
+        <li>Дека за било какви оштетувања или кражба ќе бара согласност од СОПСТВЕНИКОТ на
+        возилото, во спротивно ќе ги сноси последиците на назначената дата за враќање на
+        возилото;</li>
+        <li>Дека при користење на возилото ќе внимава на следниве услови:
+            <ul>
+                <li>нема да го користи возилото на авто-трки;</li>
+                <li>ќе го вози внимателно, согласно прописите на законот;</li>
+                <li>ќе го вози возилото сам, освен ако во договорот не е запишано како ВТОР ВОЗАЧ,
+                тогаш тој ќе биде одговорен за штети;</li>
+                <li>ќе го управува само лично, освен ако не е запишано како ВТОР ВОЗАЧ,
+                и го управува сам со истата важечка дозвола за управување;</li>
+                <li>нема да го оптерети со лица или товар повеќе од дозволената максимална
+                тежина;</li>
+                <li>нема да го користи или преминува преку границата на
+                СОПСТВЕНИКОТ во следниве држави: ЕВР, ШПТ, БИХ, БУГ, ГРЦ, СРБ, КОС, ТУР без најава на
+                СОПСТВЕНИКОТ и одобрение за зелен картон;</li>
+            </ul>
+        </li>
+    </ol>
+</div>
+
+<div class="section-title">Член 3</div>
+<div class="section">
+    <ol type="a">
+        <li>КОРИСНИКОТ се обврзува дека на СОПСТВЕНИКОТ на возилото, по
+        испратување на возилото, ќе го надомести, целосно или по договорен период ќе го
+        врати возилото во состојба како што било пред договорот и останатите
+        трошоци кои настанале, според важечкиот ценовник;</li>
+        <li>Доколку се користи над дозволената километража или потрошувачка на
+        гориво не е во согласност со бројачот на возилото, се наплатува разликата
+        во километражата според важечкиот ценовник;</li>
+    </ol>
+</div>
+
+<div class="section-title">Член 4</div>
+<div class="section">
+    <ol type="a">
+        <li>КОРИСНИКОТ се обврзува за направената штета на возилото за време на
+        наемот и неговото користење да го обештети СОПСТВЕНИКОТ за штетата
+        (вклучително и делови на моторот кои настанале заради не користење и
+        непажливо управување со возилото);</li>
+        <li>Доколку се утврди дека настаната штета е предизвикана по вина на
+        КОРИСНИКОТ или ВТОРИОТ ВОЗАЧ, СОПСТВЕНИКОТ го задолжува
+        КОРИСНИКОТ да ја надомести разликата на возилото по важечкиот
+        ценовник на RENTACAR агенцијата;</li>
+        <li>Ако КОРИСНИКОТ направи штета на возилото, КОРИСНИКОТ може
+        да се осигура со плаќање на дневна премија за осигурување назначена во
+        важечкиот ценовник.</li>
+    </ol>
+</div>
+
+<div class="section-title">Член 5</div>
+<div class="section">
+    <div>Било какви евентуални оштетувања од одговорност за штетата настаната на
+    возилото, КОРИСНИКОТ е одговорен:</div>
+    <ul>
+        <li>за настаната штета на возилото која ТОЈ или ВТОРИОТ ВОЗАЧ е
+        вклучен под дејство на алкохол или дрога;</li>
+        <li>за штета е предизвикана намерно или заради грубо невнимание при
+        возење;</li>
+        <li>ако возачот во моментот на настанување на штетата немал исправна возачка
+        дозвола;</li>
+    </ul>
+</div>
+
+<div class="section-title">Член 6</div>
+<div class="section">
+    <div>Доколку КОРИСНИКОТ не ги плати трошоците за наемот во одреден рок,
+    СОПСТВЕНИКОТ на возилото има право да направи законска затезна камата.</div>
+</div>
+
+<div class="section-title">Член 7</div>
+<div class="section">
+    <div>КОРИСНИКОТ се обврзува дека во случај на несреќа ќе ги штити интересите на
+    СОПСТВЕНИКОТ на возилото и неговиот осигурителен завод, со тоа што:</div>
+    <ul>
+        <li>ќе ги забележи имињата и адресите на сите сведоци;</li>
+        <li>нема да го напушти местото на несреќата и ќе остане на местото на
+        настанот;</li>
+        <li>веднаш ќе ја извести полицијата и веднаш ќе го извести СОПСТВЕНИКОТ на
+        возилото;</li>
+    </ul>
+    <ol type="a">
+        <li>Доколку се утврди дека штетата на возилото или ако во несреќата има
+        повеќе штета (и на другото возило или имотна кривична на други лица), веднаш ќе го
+        извести СОПСТВЕНИКОТ и ќе го потпише полицискиот записник</li>
+        <li>Во случај на сомнение дека несреќата е со намера или штетата е
+        предизвикана со намера, СОПСТВЕНИКОТ има право да го одземе возилото.</li>
+    </ol>
+</div>
+
+<div class="signature-area">
+    <div class="signature-box">
+        <div>ЗАКУПОДАВАЧ</div>
+        <div>Потпис: _______________________</div>
+        <div>М.П.</div>
+    </div>
+    <div class="signature-box">
+        <div>ЗАКУПЕЦ</div>
+        <div>Име: <span class="fill-data underline">{{customer_name}}</span></div>
+        <div>Потпис: _______________________</div>
+    </div>
+</div>
+
+<div class="no-print">
+    <button onclick="window.print()" class="print-btn">Печати договор</button>
+</div>
+
+<script>
+    // Auto-fill data from URL parameters or localStorage
+    document.addEventListener('DOMContentLoaded', function() {
+        // Try to get data from URL parameters first
+        const urlParams = new URLSearchParams(window.location.search);
+        
+        // If no URL params, try to get from localStorage
+        let customerData = {};
+        if(urlParams.toString() === '') {
+            const savedData = localStorage.getItem('customerRentalData');
+            if(savedData) {
+                customerData = JSON.parse(savedData);
+            }
+        }
+        
+        // Fill all elements with class 'fill-data'
+        document.querySelectorAll('.fill-data').forEach(element => {
+            const paramName = element.textContent.replace(/[{}]/g, '').trim();
+            
+            // Try URL params first
+            if(urlParams.has(paramName)) {
+                element.textContent = urlParams.get(paramName);
+            } 
+            // Then try localStorage
+            else if(customerData[paramName]) {
+                element.textContent = customerData[paramName];
+            }
+            // For empty fields, add a space to maintain underline
+            else if(element.classList.contains('underline') && element.textContent === '') {
+                element.innerHTML = '&nbsp;';
+            }
+        });
+        
+        // Auto-print if requested
+        if(urlParams.has('autoprint')) {
+            setTimeout(() => {
+                window.print();
+            }, 1000);
+        }
+    });
+</script>
+
+</body>
+</html>

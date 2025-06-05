@@ -1,0 +1,68 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block content %}
+<h2>Shto Makinë të Re</h2>
+
+<form method="POST" enctype="multipart/form-data">
+    <div class="mb-3">
+        <label for="brand" class="form-label">Brendi</label>
+        <input type="text" class="form-control" id="brand" name="brand" required />
+    </div>
+
+    <div class="mb-3">
+        <label for="model" class="form-label">Modeli</label>
+        <input type="text" class="form-control" id="model" name="model" required />
+    </div>
+
+    <div class="mb-3">
+        <label for="description" class="form-label">Përshkrimi</label>
+        <textarea class="form-control" id="description" name="description" rows="6" required></textarea>
+    </div>
+
+    <div class="mb-3">
+        <label for="fuel_type" class="form-label">Lloji i Karburantit</label>
+        <select class="form-control" id="fuel_type" name="fuel_type" required>
+            <option value="">Zgjedh karburantin</option>
+            <option value="Benzin">Benzin</option>
+            <option value="Naftë">Naftë</option>
+            <option value="Elektrik">Elektrik</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label for="fuel_level" class="form-label">Niveli i Karburantit (%)</label>
+        <input type="number" class="form-control" id="fuel_level" name="fuel_level" min="0" max="100" value="100">
+    </div>
+
+    <div class="mb-3">
+        <label for="km_driven" class="form-label">Kilometra të Bëra</label>
+        <input type="number" class="form-control" id="km_driven" name="km_driven" value="0">
+    </div>
+
+    <div class="mb-3">
+        <label for="green_card_valid" class="form-label">Kartoni i Gjelbër</label>
+        <select class="form-control" id="green_card_valid" name="green_card_valid" required>
+            <option value="">Zgjedh statusin</option>
+            <option value="true">Valid</option>
+            <option value="false">Invalid</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label for="production_year" class="form-label">Viti i Prodhimit</label>
+        <input type="number" class="form-control" id="production_year" name="production_year" required />
+    </div>
+
+    <div class="mb-3">
+        <label for="price_per_day" class="form-label">Çmimi për Ditë (€)</label>
+        <input type="number" step="0.01" class="form-control" id="price_per_day" name="price_per_day" required />
+    </div>
+
+    <div class="mb-3">
+        <label for="images" class="form-label">Ngarko Foto (multi-upload)</label>
+        <input type="file" class="form-control" id="images" name="images" multiple required />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Shto</button>
+</form>
+{% endblock %}

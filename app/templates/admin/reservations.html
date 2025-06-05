@@ -1,0 +1,126 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block content %}
+<h2>Lista e Rezervimeve</h2>
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Emri i Makines</th>
+            <th>Emri i Klientit</th>
+            <th>Email</th>
+            <th>Nr. Telefoni</th>
+            <th>Data Fillimit</th>
+            <th>Data Mbarimit</th>
+            <th>Numri i Ditëve</th>
+            <th>Totali (€)</th>
+            <th>Veprime</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for res in reservations %}
+        <tr>
+            <td>{{ res.car.brand }} {{ res.car.model }}</td>
+            <td>{{ res.customer_name }} {{ res.customer_surname }}</td>
+            <td>{{ res.customer_email }}</td>
+            <td>{{ res.customer_phone }}</td>
+            <td>{{ res.start_date.strftime('%d-%m-%Y') }} në {{ res.pickup_time }}</td>
+            <td>{{ res.end_date.strftime('%d-%m-%Y') }} në {{ res.return_time }}</td>
+            <td>{{ (res.end_date - res.start_date).days + 1 }}</td>
+            <td>{{ "%.2f"|format(((res.end_date - res.start_date).days + 1) * res.car.price_per_day) }} €</td>
+            <td>
+                <div class="btn-group" role="group">
+                    <a href="{{ url_for('admin.edit_reservation', reservation_id=res.id) }}" class="btn btn-sm btn-primary" title="Edito">
+                        <i class="fas fa-edit"></i>
+                    </a>
+                    <a href="{{ url_for('admin.delete_reservation', reservation_id=res.id) }}" class="btn btn-sm btn-danger" onclick="return confirm('A je i sigurt që don të fshish rezervimin?');" title="Fshi">
+                        <i class="fas fa-trash"></i>
+                    </a>
+                    <a href="{{ url_for('admin.print_reservation', reservation_id=res.id) }}" class="btn btn-sm btn-info" title="Printo" target="_blank">
+                        <i class="fas fa-print"></i>
+                    </a>
+                </div>
+            </td>
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>
+
+<!-- Modal për dokumentacionin -->
+<div class="modal fade" id="documentationModal" tabindex="-1" role="dialog" aria-labelledby="documentationModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="documentationModalLabel">Udhëzime për Dokumentacionin</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <h6>Dokumentet e nevojshme për marrjen e makinës:</h6>
+                <ol>
+                    <li>Letërnjoftim origjinal</li>
+                    <li>Leje drejtimi e vlefshme</li>
+                    <li>Kartë krediti për depozitë (nëse është e nevojshme)</li>
+                </ol>
+                
+                <h6>Procedura:</h6>
+                <ol>
+                    <li>Klienti duhet të paraqesë dokumentet e lartpërmendura</li>
+                    <li>Nënshkruani kontratën e qirasë</li>
+                    <li>Kryeni inspektimin e makinës së bashku me klientin</li>
+                    <li>Regjistroni çdo dëmtim ekzistues</li>
+                    <li>Dorëzoni çelësat dhe dokumentacionin e makinës</li>
+                </ol>
+                
+                <div class="alert alert-info mt-3">
+                    <strong>Shënim:</strong> Sigurohuni që të keni kopjuar të gjitha dokumentet e klientit përpara se të nënshkruani kontratën.
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Mbyll</button>
+                <button type="button" class="btn btn-primary" onclick="window.print()">Printo Udhëzimet</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .btn-group {
+        display: flex;
+        flex-wrap: nowrap;
+    }
+    .btn-group .btn {
+        margin-right: 5px;
+    }
+    .btn-sm {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.875rem;
+    }
+    @media print {
+        .no-print, .modal, .btn-group {
+            display: none !important;
+        }
+        body {
+            font-size: 12pt;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+    }
+</style>
+
+<script>
+    // Funksioni për të hapur modal-in me udhëzime
+    function showDocumentation() {
+        $('#documentationModal').modal('show');
+    }
+</script>
+{% endblock %}

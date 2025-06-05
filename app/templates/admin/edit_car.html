@@ -1,0 +1,108 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block content %}
+<h2>Ndrysho Makinën</h2>
+
+<form method="POST" enctype="multipart/form-data">
+    <div class="mb-3">
+        <label for="brand" class="form-label">Brendi</label>
+        <input type="text" class="form-control" id="brand" name="brand" value="{{ car.brand }}" required>
+    </div>
+
+    <div class="mb-3">
+        <label for="model" class="form-label">Modeli</label>
+        <input type="text" class="form-control" id="model" name="model" value="{{ car.model }}" required>
+    </div>
+
+    <div class="mb-3">
+        <label for="description" class="form-label">Përshkrimi</label>
+        <textarea class="form-control" id="description" name="description" rows="6">{{ car.description }}</textarea>
+    </div>
+
+    <div class="mb-3">
+        <label for="fuel_type" class="form-label">Lloji i Karburantit</label>
+        <select class="form-control" id="fuel_type" name="fuel_type" required>
+            <option value="Benzin" {% if car.fuel_type == 'Benzin' %}selected{% endif %}>Benzin</option>
+            <option value="Naftë" {% if car.fuel_type == 'Naftë' %}selected{% endif %}>Naftë</option>
+            <option value="Elektrik" {% if car.fuel_type == 'Elektrik' %}selected{% endif %}>Elektrik</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label for="fuel_level" class="form-label">Niveli i Karburantit (%)</label>
+        <input type="number" class="form-control" id="fuel_level" name="fuel_level" min="0" max="100" value="{{ car.fuel_level }}">
+    </div>
+
+    <div class="mb-3">
+        <label for="km_driven" class="form-label">Kilometra të Bëra</label>
+        <input type="number" class="form-control" id="km_driven" name="km_driven" value="{{ car.km_driven }}">
+    </div>
+
+    <div class="mb-3">
+        <label for="green_card_valid" class="form-label">Kartoni i Gjelbër</label>
+        <select class="form-control" id="green_card_valid" name="green_card_valid" required>
+            <option value="true" {% if car.green_card_valid %}selected{% endif %}>Valid</option>
+            <option value="false" {% if not car.green_card_valid %}selected{% endif %}>Invalid</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label for="production_year" class="form-label">Viti i Prodhimit</label>
+        <input type="number" class="form-control" id="production_year" name="production_year" value="{{ car.production_year }}" required>
+    </div>
+
+    <div class="mb-3">
+        <label for="price_per_day" class="form-label">Çmimi për Ditë (€)</label>
+        <input type="number" step="0.01" class="form-control" id="price_per_day" name="price_per_day" value="{{ car.price_per_day }}" required>
+    </div>
+
+    <div class="mb-3">
+        <label for="images" class="form-label">Ngarko Foto të Reja (opsionale)</label>
+        <input type="file" class="form-control" id="images" name="images" multiple>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Ruaj Ndryshimet</button>
+</form>
+
+<hr>
+
+<h4>Fotot e Ngarkuara</h4>
+{% if car.images %}
+    <div class="row">
+        {% for image in car.images %}
+        <div class="col-md-3 mb-4 position-relative" style="padding: 5px;">
+            <div style="position: relative; display: inline-block;">
+                <img src="{{ url_for('static', filename='uploads/' + image.image_filename) }}" 
+                     class="img-thumbnail" 
+                     style="height: 150px; width: 100%; object-fit: cover;">
+                
+                <!-- Butoni X për fshirje -->
+                <form method="POST" action="{{ url_for('main.delete_image', image_id=image.id) }}" style="position: absolute; top: 5px; right: 5px;">
+                    <button type="submit" class="btn btn-danger btn-sm rounded-circle" onclick="return confirm('A jeni i sigurt?')" style="width: 25px; height: 25px; padding: 0; line-height: 1;">
+                        ×
+                    </button>
+                </form>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+{% else %}
+    <p>Nuk ka foto të ngarkuara.</p>
+{% endif %}
+
+<style>
+    .img-thumbnail {
+        transition: transform 0.2s;
+    }
+    .img-thumbnail:hover {
+        transform: scale(1.03);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .btn-danger {
+        opacity: 0.8;
+    }
+    .btn-danger:hover {
+        opacity: 1;
+    }
+</style>
+{% endblock %}

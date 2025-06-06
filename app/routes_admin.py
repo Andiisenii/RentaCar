@@ -1,6 +1,6 @@
 import os
 from datetime import datetime
-from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app
+from flask import Blueprint, render_template, redirect, url_for, flash, request, current_app, session, flash
 from werkzeug.utils import secure_filename
 from app import db
 from app.models import Car, CarImage, Reservation
@@ -288,3 +288,34 @@ def delete_car_image(car_id, image_id):
 def view_reservation_history():
     history_entries = ReservationHistory.query.order_by(ReservationHistory.action_date.desc()).all()
     return render_template('admin/history.html', history_entries=history_entries)
+
+
+# Login për admin
+@admin.route('/login', methods=['GET', 'POST'])
+def admin_login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        # Këtu vendos kredencialet manualisht
+        if username == 'Aagon' and password == '0101Agon.?':
+            session['admin_logged_in'] = True
+            return redirect(url_for('admin.view_reservations'))
+        else:
+            return render_template('admin/login.html', error='Username ose fjalëkalim i pasaktë.')
+    return render_template('admin/login.html')
+
+
+# Logout
+@admin.route('/logout')
+def admin_logout():
+    session.pop('admin_logged_in', None)
+    return redirect(url_for('admin.admin_login'))
+
+@admin.before_request
+def require_login():
+    # Mos e kërko login-in për /admin/login
+    if request.endpoint and request.endpoint.startswith('admin.') and \
+       request.endpoint not in ['admin.admin_login']:
+        if not session.get('admin_logged_in'):
+            return redirect(url_for('admin.admin_login'))

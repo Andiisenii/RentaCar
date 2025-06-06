@@ -19,7 +19,7 @@ def create_app():
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['UPLOAD_FOLDER'] = 'app/static/uploads'  # Rruga relative
     app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024  # 16MB
-
+    app.secret_key = 'supersekretkey'
     db.init_app(app)
     migrate.init_app(app, db)  # inicializo migratet me app dhe db
     login_manager.init_app(app)

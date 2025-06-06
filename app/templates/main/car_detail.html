@@ -924,6 +924,16 @@
             grid-template-columns: 1fr;
         }
     }
+
+    input[type="date"].reserved {
+    background-color: #ffdddd !important;
+    color: #ff0000 !important;
+    border-color: #ff0000 !important;
+}
+
+input[type="date"]:disabled {
+    color: #ff0000 !important;
+}
 </style>
 
 <script>
@@ -941,7 +951,6 @@
     <p>© 2025 Rent a Car. Të gjitha të drejtat e rezervuara.</p>
     <p><i class="fas fa-phone"></i> +38970916307| <i class="fas fa-envelope"></i> autoagoni@gmail.com</p>
 </footer>
-
 <script>
     const startDate = document.getElementById('start_date');
     const endDate = document.getElementById('end_date');
@@ -955,16 +964,14 @@
     startDate.min = today;
     endDate.min = today;
 
-    function markReservedDates(input) {
+    // Mark reserved dates in red and disable them
+    function disableReservedDates(input) {
         input.addEventListener('input', () => {
             const val = input.value;
             if (reservedDates.includes(val)) {
                 input.classList.add('reserved');
-                input.parentElement.innerHTML = `
-                    <i class="fas fa-exclamation-triangle" style="color: var(--danger)"></i>
-                    <input type="date" name="${input.name}" id="${input.id}" class="reserved" required>
-                `;
                 alert('Kjo datë është e zënë. Ju lutem zgjidhni një datë tjetër.');
+                input.value = '';
                 totalBox.innerHTML = '<i class="fas fa-calculator"></i> Totali: <span class="total-price">0.00 €</span>';
             } else {
                 input.classList.remove('reserved');
@@ -978,7 +985,8 @@
         const end = new Date(endDate.value);
 
         if (!isNaN(start) && !isNaN(end) && start <= end) {
-            const days = Math.floor((end - start) / (1000 * 60 * 60 * 24)) + 1;
+            // Correct calculation of days (subtracting 1 day less)
+            const days = Math.floor((end - start) / (1000 * 60 * 60 * 24));
             const total = days * pricePerDay;
             totalPrice.textContent = `${total.toFixed(2)} €`;
             totalBox.innerHTML = `
@@ -998,8 +1006,8 @@
         }
     }
 
-    markReservedDates(startDate);
-    markReservedDates(endDate);
+    disableReservedDates(startDate);
+    disableReservedDates(endDate);
 
     startDate.addEventListener('change', function() {
         endDate.min = this.value;
@@ -1007,6 +1015,33 @@
     });
 
     endDate.addEventListener('change', calculateTotal);
+
+    // Style for disabled dates
+    const style = document.createElement('style');
+    style.innerHTML = `
+        input[type="date"].reserved {
+            background-color: #ffdddd !important;
+            color: #ff0000 !important;
+            border-color: #ff0000 !important;
+        }
+        input[type="date"]:disabled {
+            color: #ff0000 !important;
+        }
+    `;
+    document.head.appendChild(style);
+
+    // Disable reserved dates in the date picker
+    document.addEventListener('DOMContentLoaded', function() {
+        [startDate, endDate].forEach(input => {
+            input.addEventListener('beforeinput', function(e) {
+                if (e.inputType === 'insertReplacementText' || e.inputType === 'insertText') {
+                    if (reservedDates.includes(e.data)) {
+                        e.preventDefault();
+                    }
+                }
+            });
+        });
+    });
 
     // Add animation to form inputs on focus
     document.querySelectorAll('input').forEach(input => {
@@ -1021,6 +1056,5 @@
         });
     });
 </script>
-
 </body>
 </html>

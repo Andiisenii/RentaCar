@@ -152,3 +152,15 @@ def delete_image(image_id):
     
     return redirect(url_for('main.car_detail', car_id=car_id))
 
+@main.route('/api/booked_dates/<int:car_id>')
+def get_booked_dates(car_id):
+    reservations = Reservation.query.filter_by(car_id=car_id).all()
+    booked_dates = []
+
+    for res in reservations:
+        current = res.start_date
+        while current <= res.end_date:
+            booked_dates.append(current.strftime('%Y-%m-%d'))
+            current += timedelta(days=1)
+
+    return jsonify(booked_dates)

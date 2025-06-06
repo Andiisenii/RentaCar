@@ -1,0 +1,58 @@
+{% extends 'admin/base_admin.html' %}
+
+{% block content %}
+<h2>Shto Rezervim Manual</h2>
+<form method="POST">
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label>Emri</label>
+            <input type="text" name="customer_name" class="form-control" required>
+        </div>
+        <div class="form-group col-md-6">
+            <label>Mbiemri</label>
+            <input type="text" name="customer_surname" class="form-control" required>
+        </div>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label>Nr. Letërnjoftimit</label>
+            <input type="text" name="customer_id_number" class="form-control" required>
+        </div>
+        <div class="form-group col-md-6">
+            <label>Nr. Patentës</label>
+            <input type="text" name="customer_license_number" class="form-control" required>
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Email</label>
+        <input type="email" name="customer_email" class="form-control" required>
+    </div>
+    <div class="form-group">
+        <label>Telefoni</label>
+        <input type="text" name="customer_phone" class="form-control" required>
+    </div>
+    <div class="form-group">
+        <label>Zgjedh Makinën</label>
+        <select name="car_id" class="form-control" required>
+            {% for car in cars %}
+            <option value="{{ car.id }}">{{ car.brand }} {{ car.model }}</option>
+            {% endfor %}
+        </select>
+    </div>
+    <div class="form-row">
+        <div class="form-group col-md-6">
+            <label>Data Fillimit</label>
+            <input type="date" name="start_date" class="form-control" required>
+        </div>
+        <div class="form-group col-md-6">
+            <label>Data Mbarimit</label>
+            <input type="date" name="end_date" class="form-control" required>
+        </div>
+    </div>
+    <div class="form-group">
+        <label>Çmimi Total (€)</label>
+        <input type="number" step="0.01" name="total_price" class="form-control" required>
+    </div>
+    <button type="submit" class="btn btn-primary">Shto Rezervimin</button>
+</form>
+{% endblock %}

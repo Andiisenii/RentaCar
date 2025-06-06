@@ -174,6 +174,42 @@ def view_reservations():
     reservations = Reservation.query.all()
     return render_template('admin/reservations.html', reservations=reservations)
 
+@admin.route('/reservations/manual/add', methods=['GET', 'POST'])
+def add_manual_reservation():
+    cars = Car.query.all()
+
+    if request.method == 'POST':
+        customer_name = request.form['customer_name']
+        customer_surname = request.form['customer_surname']
+        customer_id_number = request.form['customer_id_number']
+        customer_license_number = request.form['customer_license_number']
+        customer_email = request.form['customer_email']
+        customer_phone = request.form['customer_phone']
+        car_id = request.form['car_id']
+        start_date = datetime.strptime(request.form['start_date'], '%Y-%m-%d')
+        end_date = datetime.strptime(request.form['end_date'], '%Y-%m-%d')
+        total_price = float(request.form['total_price'])
+
+        new_reservation = Reservation(
+            customer_name=customer_name,
+            customer_surname=customer_surname,
+            customer_id_number=customer_id_number,
+            customer_license_number=customer_license_number,
+            customer_email=customer_email,
+            customer_phone=customer_phone,
+            start_date=start_date,
+            end_date=end_date,
+            total_price=total_price,
+            car_id=car_id,
+            status='manual'
+        )
+        db.session.add(new_reservation)
+        db.session.commit()
+        flash('Rezervimi manual u shtua me sukses.', 'success')
+        return redirect(url_for('admin.view_reservations'))
+
+    return render_template('admin/add_manual_reservation.html', cars=cars)
+
 @admin.route('/delete_reservation/<int:reservation_id>')
 def delete_reservation(reservation_id):
     reservation = Reservation.query.get_or_404(reservation_id)

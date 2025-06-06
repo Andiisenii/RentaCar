@@ -1,0 +1,17 @@
+[33m760d83e[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m Përmirësime në sistemin e rezervimit: shfaqja e datave të zëna, validime të reja dhe ndërfaqe e përmirësuar
+[33mf77d14b[m Rregullime për rezervimet dhe datat e zëna
+[33mebe609f[m Fixed reservation add manual
+[33md2a9f25[m Fixed date calculation and added reserved dates highlighting
+[33m7a010b5[m Shto login për admin panel dhe buton për rezervim manual
+[33mf3ec6da[m Shto login për admin panel dhe buton për rezervim manual
+[33m9a20ac1[m Shtova funksionalitetin për rezervim manual nga admin paneli
+[33md930ea7[m Shto redirektim nga ww te pa-www
+[33m9146913[m Shto redirektim nga ww te pa-www
+[33m6b443a7[m Fix deployment for Render
+[33me0fe6db[m Fix deployment issues for Render
+[33m1eb086e[m  Fix flask_login version to 0.6.3
+[33m4b73688[m Përditësuar requirements.txt dhe run.py për kompatibilitet me Render
+[33mb97f7ad[m Fix case-sensitive Flask-Login module
+[33md6dc913[m Ensure Flask-Login is available and fix Render deploy
+[33m4aba7c0[m Added gunicorn to requirements for Render deploy
+[33m5f4f8e9[m intial commit for Rent a Car Flask app

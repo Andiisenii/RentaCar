@@ -12,13 +12,6 @@ migrate = Migrate()  # Shtojmë migratet
 
 def create_app():
     load_dotenv()  # ngarko env variables
-    @app.after_request
-    def add_no_cache_headers(response):
-        if request.path.startswith('/admin') or request.path.startswith('/cars'):
-            response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
-            response.headers["Pragma"] = "no-cache"
-            response.headers["Expires"] = "0"
-        return response
 
     app = Flask(__name__)
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'sekreti')

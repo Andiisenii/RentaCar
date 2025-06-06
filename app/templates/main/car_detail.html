@@ -957,57 +957,73 @@ input[type="date"]:disabled {
     const totalBox = document.getElementById('total_price');
     const totalPrice = document.querySelector('.total-price');
     const pricePerDay = {{ car.price_per_day | default(0) }};
-    const reservedDates = {{ reserved_dates | tojson | safe if reserved_dates else '[]' | safe }};
+    const reservedDates = {{ reserved_dates | tojson | safe if reserved_dates else [] | tojson | safe }};
 
     // Set min date to today
     const today = new Date().toISOString().split('T')[0];
     startDate.min = today;
     endDate.min = today;
 
-    // Mark reserved dates in red and disable them
-    function disableReservedDates(input) {
-        input.addEventListener('input', () => {
-            const val = input.value;
-            if (reservedDates.includes(val)) {
-                input.classList.add('reserved');
-                alert('Kjo datë është e zënë. Ju lutem zgjidhni një datë tjetër.');
-                input.value = '';
-                totalBox.innerHTML = '<i class="fas fa-calculator"></i> Totali: <span class="total-price">0.00 €</span>';
-            } else {
-                input.classList.remove('reserved');
-                calculateTotal();
-            }
+    // Mark reserved dates in red and prevent selection
+    function handleReservedDates() {
+        [startDate, endDate].forEach(input => {
+            input.addEventListener('change', function() {
+                if (reservedDates.includes(this.value)) {
+                    this.classList.add('reserved');
+                    alert('Kjo datë është e zënë! Ju lutem zgjidhni një datë tjetër.');
+                    this.value = '';
+                    updateTotalPrice(0);
+                } else {
+                    this.classList.remove('reserved');
+                    calculateTotal();
+                }
+            });
         });
     }
 
+    // Calculate total price correctly
     function calculateTotal() {
+        if (!startDate.value || !endDate.value) {
+            updateTotalPrice(0);
+            return;
+        }
+
         const start = new Date(startDate.value);
         const end = new Date(endDate.value);
+        
+        if (start > end) {
+            alert('Data e fillimit duhet të jetë para datës së mbarimit!');
+            endDate.value = '';
+            updateTotalPrice(0);
+            return;
+        }
 
-        if (!isNaN(start) && !isNaN(end) && start <= end) {
-            // Correct calculation of days (subtracting 1 day less)
-            const days = Math.floor((end - start) / (1000 * 60 * 60 * 24));
-            const total = days * pricePerDay;
-            totalPrice.textContent = `${total.toFixed(2)} €`;
+        // Correct day calculation (without +1)
+        const days = Math.floor((end - start) / (1000 * 60 * 60 * 24));
+        const total = days * pricePerDay;
+        
+        updateTotalPrice(total, days);
+    }
+
+    function updateTotalPrice(total, days = 0) {
+        if (days > 0) {
             totalBox.innerHTML = `
-                <i class="fas fa-calculator"></i> Totali: <span class="total-price">${total.toFixed(2)} €</span> 
-                <span style="font-size: 14px; font-weight: normal; display: block; margin-top: 5px;">
+                <i class="fas fa-calculator"></i> Totali: 
+                <span class="total-price">${total.toFixed(2)} €</span>
+                <span style="font-size: 14px; display: block; margin-top: 5px;">
                     (${days} ${days === 1 ? 'ditë' : 'ditë'} × ${pricePerDay} €)
                 </span>
             `;
-            
-            // Add animation to total box
-            totalBox.classList.add('animate__animated', 'animate__tada');
-            setTimeout(() => {
-                totalBox.classList.remove('animate__animated', 'animate__tada');
-            }, 1000);
         } else {
-            totalPrice.textContent = '0.00 €';
+            totalBox.innerHTML = `
+                <i class="fas fa-calculator"></i> Totali: 
+                <span class="total-price">0.00 €</span>
+            `;
         }
     }
 
-    disableReservedDates(startDate);
-    disableReservedDates(endDate);
+    // Initialize
+    handleReservedDates();
 
     startDate.addEventListener('change', function() {
         endDate.min = this.value;
@@ -1016,7 +1032,7 @@ input[type="date"]:disabled {
 
     endDate.addEventListener('change', calculateTotal);
 
-    // Style for disabled dates
+    // Add CSS for reserved dates
     const style = document.createElement('style');
     style.innerHTML = `
         input[type="date"].reserved {
@@ -1024,37 +1040,8 @@ input[type="date"]:disabled {
             color: #ff0000 !important;
             border-color: #ff0000 !important;
         }
-        input[type="date"]:disabled {
-            color: #ff0000 !important;
-        }
     `;
     document.head.appendChild(style);
-
-    // Disable reserved dates in the date picker
-    document.addEventListener('DOMContentLoaded', function() {
-        [startDate, endDate].forEach(input => {
-            input.addEventListener('beforeinput', function(e) {
-                if (e.inputType === 'insertReplacementText' || e.inputType === 'insertText') {
-                    if (reservedDates.includes(e.data)) {
-                        e.preventDefault();
-                    }
-                }
-            });
-        });
-    });
-
-    // Add animation to form inputs on focus
-    document.querySelectorAll('input').forEach(input => {
-        input.addEventListener('focus', function() {
-            this.parentElement.style.transform = 'scale(1.02)';
-            this.parentElement.style.boxShadow = '0 0 10px rgba(52,152,219,0.3)';
-        });
-        
-        input.addEventListener('blur', function() {
-            this.parentElement.style.transform = 'scale(1)';
-            this.parentElement.style.boxShadow = 'none';
-        });
-    });
 </script>
 </body>
 </html>

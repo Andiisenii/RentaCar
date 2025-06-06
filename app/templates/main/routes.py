@@ -151,16 +151,29 @@ def delete_image(image_id):
         flash('Gabim gjatë fshirjes së fotos', 'danger')
     
     return redirect(url_for('main.car_detail', car_id=car_id))
-
-@main.route('/api/booked_dates/<int:car_id>')
-def get_booked_dates(car_id):
-    reservations = Reservation.query.filter_by(car_id=car_id).all()
-    booked_dates = []
-
-    for res in reservations:
-        current = res.start_date
-        while current <= res.end_date:
-            booked_dates.append(current.strftime('%Y-%m-%d'))
-            current += timedelta(days=1)
-
-    return jsonify(booked_dates)
+@main.route('/get_reserved_dates')
+def get_reserved_dates():
+    conn = db.sqlite3.connect('instance/db.sqlite3')
+    cursor = conn.cursor()
+    
+    # Merr të gjitha datat e rezervuara për këtë makinë
+    cursor.execute("""
+        SELECT start_date, end_date 
+        FROM reservations 
+        WHERE car_id = ?
+    """, (car.id,))
+    
+    reservations = cursor.fetchall()
+    conn.close()
+    
+    # Gjeneron listën e të gjitha datave të rezervuara
+    reserved_dates = []
+    for start, end in reservations:
+        start_date = datetime.strptime(start, '%Y-%m-%d')
+        end_date = datetime.strptime(end, '%Y-%m-%d')
+        current_date = start_date
+        while current_date <= end_date:
+            reserved_dates.append(current_date.strftime('%Y-%m-%d'))
+            current_date += timedelta(days=1)
+    
+    return jsonify(reserved_dates)

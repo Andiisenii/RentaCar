@@ -1,7 +1,10 @@
+import app
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from app.models import Car, Reservation
 from app import db
 from datetime import datetime
+app.config['SQLALCHEMY_ECHO'] = True  # Shfaq query-t SQL në konsol
+app.config['TEMPLATES_AUTO_RELOAD'] = True  # Reload automatik i template-ve
 
 public = Blueprint('main', __name__)
 

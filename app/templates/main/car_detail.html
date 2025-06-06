@@ -957,29 +957,36 @@ input[type="date"]:disabled {
     const totalBox = document.getElementById('total_price');
     const totalPrice = document.querySelector('.total-price');
     const pricePerDay = {{ car.price_per_day | default(0) }};
-    const reservedDates = {{ reserved_dates | tojson | safe if reserved_dates else [] | tojson | safe }};
-
+    const reservedDates = {{ reserved_dates | tojson | safe }};
     // Set min date to today
     const today = new Date().toISOString().split('T')[0];
     startDate.min = today;
     endDate.min = today;
 
     // Mark reserved dates in red and prevent selection
-    function handleReservedDates() {
-        [startDate, endDate].forEach(input => {
-            input.addEventListener('change', function() {
-                if (reservedDates.includes(this.value)) {
-                    this.classList.add('reserved');
-                    alert('Kjo datë është e zënë! Ju lutem zgjidhni një datë tjetër.');
-                    this.value = '';
-                    updateTotalPrice(0);
-                } else {
-                    this.classList.remove('reserved');
-                    calculateTotal();
-                }
-            });
+    function markReservedDates() {
+    const startDateInput = document.getElementById('start_date');
+    const endDateInput = document.getElementById('end_date');
+    
+    // Kur hapet kalendari
+    [startDateInput, endDateInput].forEach(input => {
+        input.addEventListener('focus', () => {
+            setTimeout(() => {
+                // Gjen të gjithë elementet e datës në kalendarin e shfletuesit
+                const dateElements = document.querySelectorAll('[data-date]');
+                
+                dateElements.forEach(element => {
+                    const dateStr = element.getAttribute('data-date');
+                    if (window.reservedDates.includes(dateStr)) {
+                        element.style.backgroundColor = '#ffdddd';
+                        element.style.color = '#ff0000';
+                        element.style.pointerEvents = 'none';
+                    }
+                });
+            }, 100);
         });
-    }
+    });
+}
 
     // Calculate total price correctly
     function calculateTotal() {
@@ -1041,7 +1048,31 @@ input[type="date"]:disabled {
             border-color: #ff0000 !important;
         }
     `;
-    document.head.appendChild(style);
+    document.addEventListener('DOMContentLoaded', () => {
+    // Merr datat e rezervuara nga serveri
+    fetch('/get_reserved_dates')
+        .then(response => response.json())
+        .then(dates => {
+            window.reservedDates = dates;
+            markReservedDates();
+            checkReservationDates();
+        });
+
+    // Vendos datën minimale të lejuar (sot)
+    const today = new Date().toISOString().split('T')[0];
+    document.getElementById('start_date').min = today;
+    document.getElementById('end_date').min = today;
+
+    // Kontrollo ndryshimet në datat
+    document.getElementById('start_date').addEventListener('change', function() {
+        document.getElementById('end_date').min = this.value;
+        calculateTotal();
+    });
+
+    document.getElementById('end_date').addEventListener('change', calculateTotal);
+});
+
 </script>
 </body>
+
 </html>

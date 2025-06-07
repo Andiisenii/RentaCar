@@ -1,8 +1,8 @@
-"""Migrimi fillestar
+"""Added Models
 
-Revision ID: 1c59e6d15efb
+Revision ID: c32408750723
 Revises: 
-Create Date: 2025-06-07 21:46:02.767220
+Create Date: 2025-06-08 00:15:39.559862
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '1c59e6d15efb'
+revision = 'c32408750723'
 down_revision = None
 branch_labels = None
 depends_on = None

@@ -141,3 +141,19 @@ def reserved_dates(car_id):
             dates.append((start + timedelta(days=i)).strftime('%Y-%m-%d'))
 
     return jsonify(dates)
+
+# Shtoni këtë rrugë për të kontrolluar strukturën
+@main.route('/check_db')
+def check_db():
+    from sqlalchemy import inspect
+    inspector = inspect(db.engine)
+    
+    tables = inspector.get_table_names()
+    car_columns = inspector.get_columns('car')
+    car_image_columns = inspector.get_columns('car_image')
+    
+    return {
+        'tables': tables,
+        'car_columns': [c['name'] for c in car_columns],
+        'car_image_columns': [c['name'] for c in car_image_columns]
+    }

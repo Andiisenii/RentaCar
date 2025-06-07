@@ -153,13 +153,16 @@ def delete_image(image_id):
     return redirect(url_for('main.car_detail', car_id=car_id))
 @main.route('/reserved_dates/<int:car_id>')
 def reserved_dates(car_id):
-    reservations = Reservation.query.filter_by(car_id=car_id).all()
-    
-    reserved_dates = []
-    for r in reservations:
-        current_date = r.start_date
-        while current_date <= r.end_date:
-            reserved_dates.append(current_date.strftime("%Y-%m-%d"))
-            current_date += timedelta(days=1)
+    from app.models import Reservation
+    from datetime import timedelta
+    reserved = Reservation.query.filter_by(car_id=car_id).all()
+    dates = []
 
-    return jsonify(reserved_dates)
+    for res in reserved:
+        start = res.start_date
+        end = res.end_date
+        delta = (end - start).days
+        for i in range(delta + 1):
+            dates.append((start + timedelta(days=i)).strftime('%Y-%m-%d'))
+
+    return jsonify(dates)

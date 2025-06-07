@@ -12,7 +12,6 @@ migrate = Migrate()  # Shtojmë migratet
 
 def create_app():
     load_dotenv()  # ngarko env variables
-
     app = Flask(__name__)
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'sekreti')
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite3'

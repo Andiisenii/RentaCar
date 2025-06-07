@@ -561,52 +561,65 @@
             <input type="text" name="customer_phone" required id="phonePlaceholder" placeholder="Shkruani numrin e telefonit">
         </div>
     
+        <form method="POST" action="/rezervo">
         <div class="date-time-section">
             <div class="date-time-group">
-                <label><i class="fas fa-calendar-day"></i> <span id="startDateLabel">Data Fillimit:</span></label>
+                <label><i class="fas fa-calendar-day"></i> <span>Data Fillimit:</span></label>
                 <div class="input-group date-input-group">
                     <i class="fas fa-calendar-day"></i>
-                    <input type="date" name="start_date" id="start_date" class="styled-date" required>
-                    <button type="button" class="date-picker-btn" onclick="document.getElementById('start_date').showPicker()">
-                        <i class="fas fa-calendar-alt"></i>
-                    </button>
+                    <input type="text" name="start_date" id="start_date" class="styled-date" required>
                 </div>
             </div>
-    
+
             <div class="date-time-group">
-                <label><i class="fas fa-clock"></i> <span id="pickupTimeLabel">Ora e Marrjes:</span></label>
+                <label><i class="fas fa-clock"></i> <span>Ora e Marrjes:</span></label>
                 <div class="input-group time-input-group">
                     <i class="fas fa-clock"></i>
                     <input type="time" name="pickup_time" class="styled-time" required>
-                    <button type="button" class="time-picker-btn" onclick="this.previousElementSibling.showPicker()">
-                        <i class="fas fa-clock"></i>
-                    </button>
                 </div>
             </div>
-    
+
             <div class="date-time-group">
-                <label><i class="fas fa-calendar-day"></i> <span id="endDateLabel">Data Përfundimit:</span></label>
+                <label><i class="fas fa-calendar-day"></i> <span>Data Përfundimit:</span></label>
                 <div class="input-group date-input-group">
                     <i class="fas fa-calendar-day"></i>
-                    <input type="date" name="end_date" id="end_date" class="styled-date" required>
-                    <button type="button" class="date-picker-btn" onclick="document.getElementById('end_date').showPicker()">
-                        <i class="fas fa-calendar-alt"></i>
-                    </button>
+                    <input type="text" name="end_date" id="end_date" class="styled-date" required>
                 </div>
             </div>
-    
+
             <div class="date-time-group">
-                <label><i class="fas fa-clock"></i> <span id="returnTimeLabel">Ora e Kthimit:</span></label>
+                <label><i class="fas fa-clock"></i> <span>Ora e Kthimit:</span></label>
                 <div class="input-group time-input-group">
                     <i class="fas fa-clock"></i>
                     <input type="time" name="return_time" class="styled-time" required>
-                    <button type="button" class="time-picker-btn" onclick="this.previousElementSibling.showPicker()">
-                        <i class="fas fa-clock"></i>
-                    </button>
                 </div>
             </div>
         </div>
-        
+
+        <button type="submit">Rezervo</button>
+    </form>
+
+    <!-- Flatpickr JS -->
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+    <script>
+        // Datat e zëna që vijnë nga Flask (nga backend)
+        const reservedDates = {{ reserved_dates | safe }};
+
+        flatpickr("#start_date", {
+            dateFormat: "Y-m-d",
+            disable: reservedDates,
+            minDate: "today"
+        });
+
+        flatpickr("#end_date", {
+            dateFormat: "Y-m-d",
+            disable: reservedDates,
+            minDate: "today"
+        });
+    </script>
+</body>
+</html>
     
         <div class="total-box animate__animated animate__fadeIn" id="total_price">
             <i class="fas fa-calculator"></i> <span id="totalText">Totali:</span> <span class="total-price">0.00 €</span>

@@ -1,1079 +1,204 @@
 <!DOCTYPE html>
 <html lang="sq">
 <head>
-    <meta charset="UTF-8">
-    <title>Rezervo - {{ car.brand }} {{ car.model }}</title>
-    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
-    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <meta charset="UTF-8" />
+    <title>Rezervim Makine - {{ car.brand }} {{ car.model }}</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" />
     <style>
-        :root {
-            --primary: #3498db;
-            --secondary: #2ecc71;
-            --dark: #2c3e50;
-            --light: #ecf0f1;
-            --danger: #e74c3c;
-            --warning: #f39c12;
-        }
-        
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: var(--light);
-            margin: 0;
-            padding: 0;
-            color: var(--dark);
-        }
-        
-        .navbar {
-            background-color: var(--dark);
-            padding: 15px 30px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-        
-        .logo {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .logo img {
-            height: 40px;
-        }
-        
-        .logo-text {
-            color: white;
-            font-weight: bold;
-            font-size: 1.5rem;
-        }
-        
-        .nav-btn {
-            background-color: var(--primary);
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            text-decoration: none;
-            font-weight: bold;
-        }
-        
-        .nav-btn:hover {
-            background-color: #2980b9;
-            transform: translateY(-2px);
-        }
-        
-        h1 {
-            text-align: center;
-            margin: 30px 0;
-            color: var(--dark);
-            position: relative;
-            animation: fadeInDown 0.8s ease-in-out;
-        }
-        
-        h1::after {
-            content: '';
-            display: block;
-            width: 100px;
-            height: 4px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            margin: 10px auto;
-            border-radius: 2px;
-        }
-
-        .car-section {
-            display: flex;
-            justify-content: center;
-            gap: 30px;
-            flex-wrap: wrap;
-            margin: 0 auto 40px;
-            max-width: 1200px;
-            padding: 0 20px;
-        }
-
-        .car-gallery {
-            flex: 1;
-            min-width: 300px;
-            max-width: 500px;
-            position: relative;
-            overflow: hidden;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-            animation: fadeInLeft 0.8s ease-in-out;
-        }
-        
-        .car-gallery::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, rgba(52,152,219,0.2), rgba(46,204,113,0.2));
-            z-index: 1;
-            pointer-events: none;
-        }
-        
-        .car-gallery img {
-            width: 100%;
-            height: auto;
-            object-fit: cover;
-            transition: transform 0.5s ease;
-        }
-        
-        .car-gallery:hover img {
-            transform: scale(1.05);
-        }
-
-        .car-info {
-            flex: 1;
-            min-width: 300px;
-            max-width: 500px;
-            background: white;
-            padding: 25px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            font-size: 16px;
-            animation: fadeInRight 0.8s ease-in-out;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .car-info::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            right: 0;
-            width: 5px;
-            height: 100%;
-            background: linear-gradient(to bottom, var(--primary), var(--secondary));
-        }
-        
-        .car-info p {
-            margin: 15px 0;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .car-info i {
-            color: var(--primary);
-            width: 20px;
-            text-align: center;
-        }
-        
-        .fuel-type {
-            display: inline-flex;
-            align-items: center;
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-weight: bold;
-            color: white;
-            gap: 5px;
-        }
-        
-        .fuel-benzin { 
-            background-color: var(--primary);
-            box-shadow: 0 4px 10px rgba(52,152,219,0.3);
-        }
-        
-        .fuel-naft { 
-            background-color: var(--secondary);
-            box-shadow: 0 4px 10px rgba(46,204,113,0.3);
-        }
-        
-        .green-card {
-            display: inline-flex;
-            align-items: center;
-            background-color: var(--secondary);
-            color: white;
-            padding: 6px 18px;
-            border-radius: 10px;
-            font-weight: bold;
-            gap: 5px;
-            box-shadow: 0 4px 10px rgba(46,204,113,0.3);
-        }
-        
-        .price-tag {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            padding: 10px 20px;
-            border-radius: 30px;
-            font-weight: bold;
-            font-size: 1.2rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
-            margin-top: 10px;
-            animation: pulse 2s infinite;
-        }
-        
-        .specs-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-top: 20px;
-        }
-        
-        .spec-item {
-            background-color: var(--light);
-            padding: 10px;
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            font-size: 0.9rem;
-        }
-        
-        .spec-item i {
-            color: var(--primary);
-        }
-
-        form {
-            max-width: 600px;
-            margin: 40px auto;
-            background-color: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            animation: fadeInUp 0.8s ease-in-out;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        form::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 5px;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-        }
-
-        label {
-            font-weight: bold;
-            display: block;
-            margin-top: 15px;
-            color: var(--dark);
-        }
-        
-        .input-group {
-            position: relative;
-            margin-top: 5px;
-        }
-        
-        .input-group i {
-            position: absolute;
-            left: 15px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: var(--primary);
-        }
-        
-        input[type="text"],
-        input[type="email"],
-        input[type="date"],
-        input[type="time"] {
-            width: 100%;
-            padding: 12px 15px 12px 40px;
-            margin-top: 5px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: all 0.3s ease;
-        }
-        
-        input[type="text"]:focus,
-        input[type="email"]:focus,
-        input[type="date"]:focus,
-        input[type="time"]:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(52,152,219,0.2);
-            outline: none;
-        }
-        
-        input[type="date"].reserved {
-            background-color: var(--danger) !important;
-            color: white !important;
-            border-color: var(--danger) !important;
-        }
-        
-        input[type="submit"] {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            padding: 15px;
-            margin-top: 25px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            width: 100%;
-            font-size: 17px;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-        
-        input[type="submit"]:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
-        }
-        
-        .total-box {
-            margin-top: 20px;
-            padding: 15px;
-            background-color: var(--light);
-            border-radius: 10px;
-            font-size: 18px;
-            font-weight: bold;
-            text-align: center;
-            color: var(--dark);
-            border-left: 5px solid var(--primary);
-            animation: fadeIn 1s ease-in-out;
-        }
-        
-        .total-price {
-            font-size: 24px;
-            color: var(--primary);
-            margin-left: 10px;
-        }
-        
-        .features {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-            margin-top: 20px;
-        }
-        
-        .feature {
-            background-color: var(--light);
-            padding: 8px 15px;
-            border-radius: 20px;
-            font-size: 14px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        
-        .feature i {
-            color: var(--primary);
-        }
-
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes fadeInLeft { from { opacity: 0; transform: translateX(-30px); } to { opacity: 1; transform: translateX(0); } }
-        @keyframes fadeInRight { from { opacity: 0; transform: translateX(30px); } to { opacity: 1; transform: translateX(0); } }
-        @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes fadeInDown { from { opacity: 0; transform: translateY(-30px); } to { opacity: 1; transform: translateY(0); } }
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.05); }
-            100% { transform: scale(1); }
-        }
-        
-        footer {
-            background-color: var(--dark);
-            color: white;
-            text-align: center;
-            padding: 20px;
-            margin-top: 50px;
-        }
-        
-        .social-icons {
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-            margin: 15px 0;
-        }
-        
-        .social-icons a {
-            color: white;
-            font-size: 20px;
-            transition: all 0.3s ease;
-        }
-        
-        .social-icons a:hover {
-            color: var(--primary);
-            transform: translateY(-3px);
-        }
-        
-        .floating {
-            animation: floating 3s ease-in-out infinite;
-        }
-        
-        @keyframes floating {
-            0% { transform: translateY(0px); }
-            50% { transform: translateY(-10px); }
-            100% { transform: translateY(0px); }
-        }
-        
-        /* Responsive design */
-        @media (max-width: 768px) {
-            .car-section {
-                flex-direction: column;
-                align-items: center;
-            }
-            
-            .car-gallery, .car-info {
-                max-width: 100%;
-            }
-            
-            .specs-grid {
-                grid-template-columns: 1fr;
-            }
-        }
+      body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+        background: #f9f9f9;
+      }
+      .car-container {
+        max-width: 900px;
+        margin: auto;
+        background: white;
+        border-radius: 8px;
+        padding: 20px;
+        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        animation: fadeIn 1s ease;
+      }
+      .car-title {
+        font-size: 2em;
+        margin-bottom: 10px;
+        text-align: center;
+      }
+      .carousel {
+        position: relative;
+        max-width: 600px;
+        margin: 10px auto 30px;
+        overflow: hidden;
+        border-radius: 10px;
+      }
+      .carousel img {
+        width: 100%;
+        display: none;
+        transition: opacity 0.5s ease-in-out;
+      }
+      .carousel img.active {
+        display: block;
+        opacity: 1;
+      }
+      .carousel-buttons {
+        text-align: center;
+        margin-top: 10px;
+      }
+      .carousel-buttons button {
+        margin: 0 5px;
+        padding: 6px 12px;
+        font-size: 1em;
+        cursor: pointer;
+        border-radius: 5px;
+        border: none;
+        background-color: #3498db;
+        color: white;
+        transition: background-color 0.3s ease;
+      }
+      .carousel-buttons button:hover {
+        background-color: #2980b9;
+      }
+      .description {
+        padding: 0 10px;
+        margin-bottom: 20px;
+        font-size: 1.1em;
+        color: #555;
+      }
+      form label {
+        display: block;
+        margin-top: 10px;
+        font-weight: bold;
+      }
+      form input, form select {
+        width: 100%;
+        padding: 8px;
+        margin-top: 5px;
+        box-sizing: border-box;
+        font-size: 1em;
+      }
+      form button {
+        margin-top: 20px;
+        background-color: #27ae60;
+        border: none;
+        color: white;
+        padding: 12px 20px;
+        font-size: 1.2em;
+        cursor: pointer;
+        border-radius: 5px;
+        width: 100%;
+      }
+      form button:hover {
+        background-color: #1e8449;
+      }
+      .total-price {
+        margin-top: 15px;
+        font-weight: bold;
+        font-size: 1.3em;
+        color: #e74c3c;
+      }
+      @keyframes fadeIn {
+        from {opacity: 0;}
+        to {opacity: 1;}
+      }
     </style>
 </head>
 <body>
+<div class="car-container">
+    <h1 class="car-title">{{ car.brand }} {{ car.model }} ({{ car.production_year }})</h1>
 
-    <nav class="navbar">
-        <div class="logo">
-            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Rent a Car Logo" class="floating">
-            <span class="logo-text">RENT A CAR</span>
-        </div>
-        <div class="language-selector">
-            <select id="languageSelector" onchange="changeLanguage()">
-                <option value="sq">Shqip</option>
-                <option value="mk">Македонски</option>
-                <option value="en">English</option>
-            </select>
-        </div>
-        <a href="/" class="nav-btn animate__animated animate__pulse animate__infinite" id="homeBtn">
-            <i class="fas fa-home"></i> <span id="homeText">Kthehu në Faqen Kryesore</span>
-        </a>
-    </nav>
-    
-    <h1 class="animate__animated animate__fadeIn">{{ car.brand }} {{ car.model }}</h1>
-    
-    <div class="car-section">
-        <div class="car-gallery">
-            {% for image in car.images %}
-            <img src="{{ url_for('static', filename='uploads/' + image.image_filename) }}" alt="Foto e makinës" class="animate__animated animate__fadeIn">
-            {% endfor %}
-        </div>
-        <div class="car-info">
-            <p><i class="fas fa-car"></i> <strong id="descriptionLabel">Përshkrimi:</strong> {{ car.description }}</p>
-            
-            <div class="specs-grid">
-                <div class="spec-item">
-                    <i class="fas fa-gas-pump"></i>
-                    <span><strong id="fuelLabel">Karburanti:</strong> 
-                        {% if car.fuel_type == 'Benzin' %}
-                            <span class="fuel-type fuel-benzin"><i class="fas fa-fire"></i> <span id="fuelBenzin">Benzin</span></span>
-                        {% elif car.fuel_type == 'Naftë' %}
-                            <span class="fuel-type fuel-naft"><i class="fas fa-oil-can"></i> <span id="fuelDiesel">Naftë</span></span>
-                        {% else %}
-                            {{ car.fuel_type }}
-                        {% endif %}
-                    </span>
-                </div>
-                
-                <div class="spec-item">
-                    <i class="fas fa-tachometer-alt"></i>
-                    <span><strong id="mileageLabel">Kilometra:</strong> {{ car.km_driven }} km</span>
-                </div>
-                
-                <div class="spec-item">
-                    <i class="fas fa-id-card"></i>
-                    <span class="green-card"><i class="fas fa-leaf"></i> {{ 'Valid' if car.green_card_valid else 'Jo Valid' }}</span></span>
-                </div>
-                
-                <div class="spec-item">
-                    <i class="fas fa-calendar-alt"></i>
-                    <span><strong id="yearLabel">Viti i prodhimit:</strong> {{ car.production_year }}</span>
-                </div>
-                
-                <div class="spec-item">
-                    <i class="fas fa-cogs"></i>
-                    <span><strong id="transmissionLabel">Transmetimi:</strong> {{ car.transmission if car.transmission else 'Automatik' }}</span>
-                </div>
-                
-                <div class="spec-item">
-                    <i class="fas fa-chair"></i>
-                    <span><strong id="seatsLabel">Vende:</strong> {{ car.seats if car.seats else '5'}}</span>
-                </div>
-            </div>
-            
-            <div class="price-tag animate__animated animate__pulse animate__infinite animate__slower">
-                <i class="fas fa-tag"></i>
-                <span id="priceText">Çmimi:</span> {{ car.price_per_day }} € / <span id="perDayText">ditë</span>
-            </div>
-            
-            <div class="features">
-                {% if car.ac %}
-                    <div class="feature"><i class="fas fa-snowflake"></i> <span id="acFeature">Klima Automatike</span></div>
-                {% endif %}
-                {% if car.gps %}
-                    <div class="feature"><i class="fas fa-map-marked-alt"></i> GPS</div>
-                {% endif %}
-                {% if car.bluetooth %}
-                    <div class="feature"><i class="fas fa-bluetooth"></i> Bluetooth</div>
-                {% endif %}
-                {% if car.usb %}
-                    <div class="feature"><i class="fas fa-usb"></i> USB</div>
-                {% endif %}
-            </div>
+    <!-- Carousel i fotove -->
+    <div class="carousel" id="carousel">
+        {% for image in car.images %}
+            <img src="{{ url_for('static', filename='uploads/' + image.image_filename) }}" alt="Foto makine" class="{% if loop.first %}active{% endif %}">
+        {% else %}
+            <img src="{{ url_for('static', filename='default-car.jpg') }}" alt="Makina nuk ka foto" class="active">
+        {% endfor %}
+        <div class="carousel-buttons">
+            <button onclick="prevImage()">&#8592; Mbrapa</button>
+            <button onclick="nextImage()">Përpara &#8594;</button>
         </div>
     </div>
-    
-    <form method="POST" class="reservation-form">
-        <h2 style="text-align: center; margin-bottom: 20px; color: var(--dark);">
-            <i class="fas fa-calendar-check"></i> <span id="reservationTitle">Plotësoni të dhënat për rezervim</span>
-        </h2>
-        
-        <label><i class="fas fa-user"></i> <span id="nameLabel">Emri:</span></label>
-        <div class="input-group">
-            <i class="fas fa-user"></i>
-            <input type="text" name="customer_name" required id="namePlaceholder" placeholder="Shkruani emrin tuaj">
-        </div>
-    
-        <label><span id="surnameLabel">Mbiemri:</span></label>
-        <div class="input-group">
-            <i class="fas fa-user"></i>
-            <input type="text" name="customer_surname" required id="surnamePlaceholder" placeholder="Shkruani mbiemrin tuaj">
-        </div>
-    
-        <label><i class="fas fa-id-card"></i> <span id="idLabel">Nr. Letërnjoftimi:</span></label>
-        <div class="input-group">
-            <i class="fas fa-id-card"></i>
-            <input type="text" name="customer_id_number" required minlength="13" maxlength="15" id="idPlaceholder" placeholder="Shkruani numrin e letërnjoftimit">
-        </div>
-    
-        <label><i class="fas fa-id-card-alt"></i> <span id="licenseLabel">Nr. Lejes së Drejtimit:</span></label>
-        <div class="input-group">
-            <i class="fas fa-id-card-alt"></i>
-            <input type="text" name="customer_license_number" required id="licensePlaceholder" placeholder="Shkruani numrin e lejes së drejtimit">
-        </div>
-    
-        <label><i class="fas fa-envelope"></i> <span id="emailLabel">Email:</span></label>
-        <div class="input-group">
-            <i class="fas fa-envelope"></i>
-            <input type="email" name="customer_email" required id="emailPlaceholder" placeholder="Shkruani email-in tuaj">
-        </div>
-    
-        <label><i class="fas fa-phone"></i> <span id="phoneLabel">Numri i Telefonit:</span></label>
-        <div class="input-group">
-            <i class="fas fa-phone"></i>
-            <input type="text" name="customer_phone" required id="phonePlaceholder" placeholder="Shkruani numrin e telefonit">
-        </div>
-    
-        <div class="date-time-section">
-            <div class="date-time-group">
-                <label><i class="fas fa-calendar-day"></i> <span id="startDateLabel">Data Fillimit:</span></label>
-                <div class="input-group date-input-group">
-                    <i class="fas fa-calendar-day"></i>
-                    <input type="date" name="start_date" id="start_date" class="styled-date" required>
-                    <button type="button" class="date-picker-btn" onclick="document.getElementById('start_date').showPicker()">
-                        <i class="fas fa-calendar-alt"></i>
-                    </button>
-                </div>
-            </div>
-    
-            <div class="date-time-group">
-                <label><i class="fas fa-clock"></i> <span id="pickupTimeLabel">Ora e Marrjes:</span></label>
-                <div class="input-group time-input-group">
-                    <i class="fas fa-clock"></i>
-                    <input type="time" name="pickup_time" class="styled-time" required>
-                    <button type="button" class="time-picker-btn" onclick="this.previousElementSibling.showPicker()">
-                        <i class="fas fa-clock"></i>
-                    </button>
-                </div>
-            </div>
-    
-            <div class="date-time-group">
-                <label><i class="fas fa-calendar-day"></i> <span id="endDateLabel">Data Përfundimit:</span></label>
-                <div class="input-group date-input-group">
-                    <i class="fas fa-calendar-day"></i>
-                    <input type="date" name="end_date" id="end_date" class="styled-date" required>
-                    <button type="button" class="date-picker-btn" onclick="document.getElementById('end_date').showPicker()">
-                        <i class="fas fa-calendar-alt"></i>
-                    </button>
-                </div>
-            </div>
-    
-            <div class="date-time-group">
-                <label><i class="fas fa-clock"></i> <span id="returnTimeLabel">Ora e Kthimit:</span></label>
-                <div class="input-group time-input-group">
-                    <i class="fas fa-clock"></i>
-                    <input type="time" name="return_time" class="styled-time" required>
-                    <button type="button" class="time-picker-btn" onclick="this.previousElementSibling.showPicker()">
-                        <i class="fas fa-clock"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-        
-    
-        <div class="total-box animate__animated animate__fadeIn" id="total_price">
-            <i class="fas fa-calculator"></i> <span id="totalText">Totali:</span> <span class="total-price">0.00 €</span>
-        </div>
-    
-        <input type="submit" value="Konfirmo Rezervimin" class="animate__animated animate__pulse submit-btn" id="submitBtn">
+
+    <p class="description">{{ car.description }}</p>
+    <p><strong>Çmimi për ditë:</strong> {{ car.price_per_day }} €</p>
+
+    <!-- Formulari për rezervim -->
+    <form method="POST" id="reservationForm">
+        <label>Emri:</label>
+        <input type="text" name="customer_name" required>
+
+        <label>Mbiemri:</label>
+        <input type="text" name="customer_surname" required>
+
+        <label>Numri i ID-së:</label>
+        <input type="text" name="customer_id_number" required>
+
+        <label>Numri i patentës:</label>
+        <input type="text" name="customer_license_number" required>
+
+        <label>Email:</label>
+        <input type="email" name="customer_email" required>
+
+        <label>Telefoni:</label>
+        <input type="tel" name="customer_phone" required>
+
+        <label>Periudha e rezervimit:</label>
+        <input type="text" id="dateRangePicker" name="start_date" placeholder="Zgjidh periudhën" required readonly>
+
+        <p class="total-price" id="totalPrice">Totali: 0.00 €</p>
+
+        <button type="submit">Rezervo tani</button>
     </form>
-    
-    <style>
-        /* Language selector styling */
-        .language-selector {
-            margin-left: auto;
-            margin-right: 20px;
-        }
-        
-        .language-selector select {
-            padding: 8px 12px;
-            border-radius: 5px;
-            border: 1px solid #ddd;
-            background-color: white;
-            font-size: 14px;
-        }
-        
-        /* Existing styles remain the same */
-        .date-time-section {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 20px;
-            margin-bottom: 20px;
-        }
-    
-        .date-time-group {
-            margin-bottom: 15px;
-        }
-    
-        .date-input-group, .time-input-group {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-    
-        .styled-date, .styled-time {
-            flex-grow: 1;
-            padding: 12px 15px 12px 40px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            font-size: 16px;
-            background-color: white;
-        }
-    
-        .date-picker-btn, .time-picker-btn {
-            position: absolute;
-            right: 10px;
-            background: none;
-            border: none;
-            color: var(--primary);
-            cursor: pointer;
-            font-size: 16px;
-            padding: 5px;
-        }
-    
-        .date-picker-btn:hover, .time-picker-btn:hover {
-            color: var(--secondary);
-        }
-    
-        input[type="date"]::-webkit-calendar-picker-indicator,
-        input[type="time"]::-webkit-calendar-picker-indicator {
-            position: absolute;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            cursor: pointer;
-        }
-    
-        .submit-btn {
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            color: white;
-            padding: 15px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            width: 100%;
-            font-size: 17px;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-        }
-    
-        .submit-btn:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 6px 15px rgba(0,0,0,0.2);
-        }
-    
-        @media (max-width: 768px) {
-            .date-time-section {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
-    
-    <script>
-        // Language translations
-        const translations = {
-            'sq': {
-                'homeText': 'Kthehu në Faqen Kryesore',
-                'descriptionLabel': 'Përshkrimi:',
-                'fuelLabel': 'Karburanti:',
-                'fuelBenzin': 'Benzin',
-                'fuelDiesel': 'Naftë',
-                'mileageLabel': 'Kilometra:',
-                'yearLabel': 'Viti i prodhimit:',
-                'transmissionLabel': 'Transmetimi:',
-                'seatsLabel': 'Vende:',
-                'priceText': 'Çmimi:',
-                'perDayText': 'ditë',
-                'acFeature': 'Klima Automatike',
-                'reservationTitle': 'Plotësoni të dhënat për rezervim',
-                'nameLabel': 'Emri:',
-                'namePlaceholder': 'Shkruani emrin tuaj',
-                'surnameLabel': 'Mbiemri:',
-                'surnamePlaceholder': 'Shkruani mbiemrin tuaj',
-                'idLabel': 'Nr. Letërnjoftimi:',
-                'idPlaceholder': 'Shkruani numrin e letërnjoftimit',
-                'licenseLabel': 'Nr. Lejes së Drejtimit:',
-                'licensePlaceholder': 'Shkruani numrin e lejes së drejtimit',
-                'emailLabel': 'Email:',
-                'emailPlaceholder': 'Shkruani email-in tuaj',
-                'phoneLabel': 'Numri i Telefonit:',
-                'phonePlaceholder': 'Shkruani numrin e telefonit',
-                'startDateLabel': 'Data Fillimit:',
-                'pickupTimeLabel': 'Ora e Marrjes:',
-                'endDateLabel': 'Data Përfundimit:',
-                'returnTimeLabel': 'Ora e Kthimit:',
-                'totalText': 'Totali:',
-                'submitBtn': 'Konfirmo Rezervimin'
-            },
-            'mk': {
-                'homeText': 'Назад на Почетната Страна',
-                'descriptionLabel': 'Опис:',
-                'fuelLabel': 'Гориво:',
-                'fuelBenzin': 'Бензин',
-                'fuelDiesel': 'Дизел',
-                'mileageLabel': 'Километража:',
-                'yearLabel': 'Година на производство:',
-                'transmissionLabel': 'Пренос:',
-                'seatsLabel': 'Седишта:',
-                'priceText': 'Цена:',
-                'perDayText': 'ден',
-                'acFeature': 'Автоматска Клима',
-                'reservationTitle': 'Пополнете ги податоците за резервација',
-                'nameLabel': 'Име:',
-                'namePlaceholder': 'Внесете го вашето име',
-                'surnameLabel': 'Презиме:',
-                'surnamePlaceholder': 'Внесете го вашето презиме',
-                'idLabel': 'Бр. на Лична Карта:',
-                'idPlaceholder': 'Внесете го бројот на лична карта',
-                'licenseLabel': 'Бр. на Возачка Дозвола:',
-                'licensePlaceholder': 'Внесете го бројот на возачка дозвола',
-                'emailLabel': 'Е-пошта:',
-                'emailPlaceholder': 'Внесете ја вашата е-пошта',
-                'phoneLabel': 'Телефонски Број:',
-                'phonePlaceholder': 'Внесете го вашиот телефонски број',
-                'startDateLabel': 'Почетен Датум:',
-                'pickupTimeLabel': 'Време на Преземање:',
-                'endDateLabel': 'Краен Датум:',
-                'returnTimeLabel': 'Време на Враќање:',
-                'totalText': 'Вкупно:',
-                'submitBtn': 'Потврди Резервација'
-            },
-            'en': {
-                'homeText': 'Return to Homepage',
-                'descriptionLabel': 'Description:',
-                'fuelLabel': 'Fuel:',
-                'fuelBenzin': 'Petrol',
-                'fuelDiesel': 'Diesel',
-                'mileageLabel': 'Mileage:',
-                'yearLabel': 'Production Year:',
-                'transmissionLabel': 'Transmission:',
-                'seatsLabel': 'Seats:',
-                'priceText': 'Price:',
-                'perDayText': 'day',
-                'acFeature': 'Air Conditioning',
-                'reservationTitle': 'Fill in the reservation details',
-                'nameLabel': 'Name:',
-                'namePlaceholder': 'Enter your name',
-                'surnameLabel': 'Surname:',
-                'surnamePlaceholder': 'Enter your surname',
-                'idLabel': 'ID Number:',
-                'idPlaceholder': 'Enter your ID number',
-                'licenseLabel': 'Driver License Number:',
-                'licensePlaceholder': 'Enter your driver license number',
-                'emailLabel': 'Email:',
-                'emailPlaceholder': 'Enter your email',
-                'phoneLabel': 'Phone Number:',
-                'phonePlaceholder': 'Enter your phone number',
-                'startDateLabel': 'Start Date:',
-                'pickupTimeLabel': 'Pickup Time:',
-                'endDateLabel': 'End Date:',
-                'returnTimeLabel': 'Return Time:',
-                'totalText': 'Total:',
-                'submitBtn': 'Confirm Reservation'
-            }
-        };
-    
-        // Function to change language
-        function changeLanguage() {
-            const lang = document.getElementById('languageSelector').value;
-            const elements = translations[lang];
-            
-            for (const [key, value] of Object.entries(elements)) {
-                const element = document.getElementById(key);
-                if (element) {
-                    if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
-                        element.placeholder = value;
-                    } else if (element.tagName === 'BUTTON' || element.tagName === 'INPUT' && element.type === 'submit') {
-                        element.value = value;
-                    } else {
-                        element.textContent = value;
-                    }
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script>
+    var reservedDates = {{ reserved_dates | tojson }};
+    var pricePerDay = {{ car.price_per_day }};
+    var dateRangePicker = document.getElementById('dateRangePicker');
+    var totalPriceEl = document.getElementById('totalPrice');
+
+    // Carousel funksion
+    let currentIndex = 0;
+    const images = document.querySelectorAll('#carousel img');
+    function showImage(index) {
+        images.forEach((img, i) => {
+            img.classList.toggle('active', i === index);
+        });
+    }
+    function prevImage() {
+        currentIndex = (currentIndex - 1 + images.length) % images.length;
+        showImage(currentIndex);
+    }
+    function nextImage() {
+        currentIndex = (currentIndex + 1) % images.length;
+        showImage(currentIndex);
+    }
+
+    // Konfigurimi i flatpickr me disable datat e rezervuara
+    flatpickr(dateRangePicker, {
+        mode: "range",
+        dateFormat: "Y-m-d",
+        disable: reservedDates,
+        minDate: "today",
+        onChange: function(selectedDates) {
+            if(selectedDates.length === 2) {
+                let start = selectedDates[0];
+                let end = selectedDates[1];
+                // Llogarit ditët: dallimi në ms, konverto në ditë
+                let diffTime = end.getTime() - start.getTime();
+                let diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                if(diffDays > 0){
+                    let total = diffDays * pricePerDay;
+                    totalPriceEl.textContent = `Totali: ${total.toFixed(2)} € për ${diffDays} ditë`;
+                } else {
+                    totalPriceEl.textContent = 'Totali: 0.00 €';
                 }
+            } else {
+                totalPriceEl.textContent = 'Totali: 0.00 €';
             }
         }
-    
-        // Initialize with Albanian language
-        window.onload = function() {
-            changeLanguage();
-        };
-    
-        // Existing functions remain the same
-        function showPicker(inputId) {
-            document.getElementById(inputId).showPicker();
-        }
-    </script>
-
-<style>
-    /* Stilizimi i ri për fushat e datës dhe orës */
-    .date-time-section {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 20px;
-        margin-bottom: 20px;
-    }
-
-    .date-time-group {
-        margin-bottom: 15px;
-    }
-
-    .date-input-group, .time-input-group {
-        position: relative;
-        display: flex;
-        align-items: center;
-    }
-
-    .styled-date, .styled-time {
-        flex-grow: 1;
-        padding: 12px 15px 12px 40px;
-        border: 1px solid #ddd;
-        border-radius: 8px;
-        font-size: 16px;
-        background-color: white;
-    }
-
-    .date-picker-btn, .time-picker-btn {
-        position: absolute;
-        right: 10px;
-        background: none;
-        border: none;
-        color: var(--primary);
-        cursor: pointer;
-        font-size: 16px;
-        padding: 5px;
-    }
-
-    .date-picker-btn:hover, .time-picker-btn:hover {
-        color: var(--secondary);
-    }
-
-    /* Përshtatje për shfaqjen e inputeve të datës në shfletues të ndryshëm */
-    input[type="date"]::-webkit-calendar-picker-indicator,
-    input[type="time"]::-webkit-calendar-picker-indicator {
-        position: absolute;
-        left: 0;
-        top: 0;
-        width: 100%;
-        height: 100%;
-        opacity: 0;
-        cursor: pointer;
-    }
-
-    /* Stilizimi i butonit submit */
-    .submit-btn {
-        background: linear-gradient(135deg, var(--primary), var(--secondary));
-        color: white;
-        padding: 15px;
-        border: none;
-        border-radius: 8px;
-        cursor: pointer;
-        width: 100%;
-        font-size: 17px;
-        font-weight: bold;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
-
-    .submit-btn:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 6px 15px rgba(0,0,0,0.2);
-    }
-
-    /* Responsive design */
-    @media (max-width: 768px) {
-        .date-time-section {
-            grid-template-columns: 1fr;
-        }
-    }
-
-    input[type="date"].reserved {
-    background-color: #ffdddd !important;
-    color: #ff0000 !important;
-    border-color: #ff0000 !important;
-}
-
-input[type="date"]:disabled {
-    color: #ff0000 !important;
-}
-</style>
-
-<script>
-    // Funksioni për të aktivizuar zgjedhësin e datës/orës
-    function showPicker(inputId) {
-        document.getElementById(inputId).showPicker();
-    }
-</script>
-<footer>
-    <div class="social-icons">
-        <a href="https://www.facebook.com/Sauto2020" class="animate__animated animate__fadeIn animate__delay-1s"><i class="fab fa-facebook"></i></a>
-        <a href="https://www.instagram.com/auto_agoni?igsh=bGRnOXZmYm5wbWx5" class="animate__animated animate__fadeIn animate__delay-2s"><i class="fab fa-instagram"></i></a>
-        <a href="https://wa.me/38970916307" class="animate__animated animate__fadeIn animate__delay-3s"><i class="fab fa-whatsapp"></i></a>
-    </div>
-    <p>© 2025 Rent a Car. Të gjitha të drejtat e rezervuara.</p>
-    <p><i class="fas fa-phone"></i> +38970916307| <i class="fas fa-envelope"></i> autoagoni@gmail.com</p>
-</footer>
-<script>
-    const startDate = document.getElementById('start_date');
-    const endDate = document.getElementById('end_date');
-    const totalBox = document.getElementById('total_price');
-    const totalPrice = document.querySelector('.total-price');
-    const pricePerDay = {{ car.price_per_day | default(0) }};
-    const reservedDates = {{ reserved_dates | tojson | safe }};
-    // Set min date to today
-    const today = new Date().toISOString().split('T')[0];
-    startDate.min = today;
-    endDate.min = today;
-
-    // Mark reserved dates in red and prevent selection
-    function markReservedDates() {
-    const startDateInput = document.getElementById('start_date');
-    const endDateInput = document.getElementById('end_date');
-    
-    // Kur hapet kalendari
-    [startDateInput, endDateInput].forEach(input => {
-        input.addEventListener('focus', () => {
-            setTimeout(() => {
-                // Gjen të gjithë elementet e datës në kalendarin e shfletuesit
-                const dateElements = document.querySelectorAll('[data-date]');
-                
-                dateElements.forEach(element => {
-                    const dateStr = element.getAttribute('data-date');
-                    if (window.reservedDates.includes(dateStr)) {
-                        element.style.backgroundColor = '#ffdddd';
-                        element.style.color = '#ff0000';
-                        element.style.pointerEvents = 'none';
-                    }
-                });
-            }, 100);
-        });
     });
-}
-
-    // Calculate total price correctly
-    function calculateTotal() {
-        if (!startDate.value || !endDate.value) {
-            updateTotalPrice(0);
-            return;
-        }
-
-        const start = new Date(startDate.value);
-        const end = new Date(endDate.value);
-        
-        if (start > end) {
-            alert('Data e fillimit duhet të jetë para datës së mbarimit!');
-            endDate.value = '';
-            updateTotalPrice(0);
-            return;
-        }
-
-        // Correct day calculation (without +1)
-        const days = Math.floor((end - start) / (1000 * 60 * 60 * 24));
-        const total = days * pricePerDay;
-        
-        updateTotalPrice(total, days);
-    }
-
-    function updateTotalPrice(total, days = 0) {
-        if (days > 0) {
-            totalBox.innerHTML = `
-                <i class="fas fa-calculator"></i> Totali: 
-                <span class="total-price">${total.toFixed(2)} €</span>
-                <span style="font-size: 14px; display: block; margin-top: 5px;">
-                    (${days} ${days === 1 ? 'ditë' : 'ditë'} × ${pricePerDay} €)
-                </span>
-            `;
-        } else {
-            totalBox.innerHTML = `
-                <i class="fas fa-calculator"></i> Totali: 
-                <span class="total-price">0.00 €</span>
-            `;
-        }
-    }
-
-    // Initialize
-    handleReservedDates();
-
-    startDate.addEventListener('change', function() {
-        endDate.min = this.value;
-        calculateTotal();
-    });
-
-    endDate.addEventListener('change', calculateTotal);
-
-    // Add CSS for reserved dates
-    const style = document.createElement('style');
-    style.innerHTML = `
-        input[type="date"].reserved {
-            background-color: #ffdddd !important;
-            color: #ff0000 !important;
-            border-color: #ff0000 !important;
-        }
-    `;
-    document.addEventListener('DOMContentLoaded', () => {
-    // Merr datat e rezervuara nga serveri
-    fetch('/get_reserved_dates')
-        .then(response => response.json())
-        .then(dates => {
-            window.reservedDates = dates;
-            markReservedDates();
-            checkReservationDates();
-        });
-
-    // Vendos datën minimale të lejuar (sot)
-    const today = new Date().toISOString().split('T')[0];
-    document.getElementById('start_date').min = today;
-    document.getElementById('end_date').min = today;
-
-    // Kontrollo ndryshimet në datat
-    document.getElementById('start_date').addEventListener('change', function() {
-        document.getElementById('end_date').min = this.value;
-        calculateTotal();
-    });
-
-    document.getElementById('end_date').addEventListener('change', calculateTotal);
-});
-
 </script>
 </body>
-
 </html>
-

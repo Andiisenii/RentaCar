@@ -37,89 +37,64 @@ def contact():
     return render_template('main/contact.html')
 
 # Detajet e makinës dhe rezervimi
+
 @main.route('/car/<int:car_id>', methods=['GET', 'POST'])
 def car_detail(car_id):
     car = Car.query.options(joinedload(Car.images)).get_or_404(car_id)
 
-    if request.method == 'POST':
-        customer_name = request.form.get('customer_name', '').strip()
-        customer_surname = request.form.get('customer_surname', '').strip()
-        customer_id_number = request.form.get('customer_id_number', '').strip()
-        customer_license_number = request.form.get('customer_license_number', '').strip()
-        customer_email = request.form.get('customer_email', '').strip()
-        customer_phone = request.form.get('customer_phone', '').strip()
-        start_date_str = request.form.get('start_date', '').strip()
-        end_date_str = request.form.get('end_date', '').strip()
-
-        # Validimi i të dhënave
-        if not all([customer_name, customer_surname, customer_id_number, customer_license_number, 
-                   customer_email, customer_phone, start_date_str, end_date_str]):
-            flash('Ju lutem plotësoni të gjitha fushat e kërkuara.', 'danger')
-            return redirect(url_for('main.car_detail', car_id=car_id))
-
-        try:
-            start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
-            end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
-
-            if start_date > end_date:
-                flash('Data e fillimit duhet të jetë para datës së mbarimit.', 'danger')
-                return redirect(url_for('main.car_detail', car_id=car_id))
-
-            if start_date < datetime.today().date():
-                flash('Data e fillimit nuk mund të jetë në të kaluarën.', 'danger')
-                return redirect(url_for('main.car_detail', car_id=car_id))
-        except ValueError:
-            flash('Format i gabuar i datës. Ju lutem përdorni YYYY-MM-DD.', 'danger')
-            return redirect(url_for('main.car_detail', car_id=car_id))
-
-        # Kontrolli për konflikt në rezervime
-        conflicts = Reservation.query.filter(
-            Reservation.car_id == car_id,
-            Reservation.end_date >= start_date,
-            Reservation.start_date <= end_date,
-            Reservation.status != 'cancelled'  # Mos merr parasysh rezervimet e anuluara
-        ).all()
-
-        if conflicts:
-            flash('Makina është e rezervuar në këtë periudhë.', 'danger')
-            return redirect(url_for('main.car_detail', car_id=car_id))
-
-        # Llogaritja e totalit të çmimit
-        days = (end_date - start_date).days + 1
-        total_price = days * car.price_per_day
-
-        # Krijimi i rezervimit
-        new_reservation = Reservation(
-            car_id=car_id,
-            customer_name=customer_name,
-            customer_surname=customer_surname,
-            customer_id_number=customer_id_number,
-            customer_license_number=customer_license_number,
-            customer_email=customer_email,
-            customer_phone=customer_phone,
-            start_date=start_date,
-            end_date=end_date,
-            total_price=total_price,
-            status='confirmed'  # Shto statusin e rezervimit
-        )
-        db.session.add(new_reservation)
-        db.session.commit()
-
-        flash(f'Rezervimi u krye me sukses! Totali: {total_price:.2f} € për {days} ditë.', 'success')
-        return redirect(url_for('main.home'))
-
-    # Merr rezervimet ekzistuese për të shfaqur datat e zëna
+    # Merr rezervimet ekzistuese për kalendarin
     reservations = Reservation.query.filter(
         Reservation.car_id == car_id,
         Reservation.status != 'cancelled'
     ).all()
-    
+
     reserved_dates = []
     for r in reservations:
         current = r.start_date
         while current <= r.end_date:
             reserved_dates.append(current.strftime('%Y-%m-%d'))
             current += timedelta(days=1)
+
+    if request.method == 'POST':
+        # Merr të dhënat nga forma
+        customer_name = request.form.get('customer_name', '').strip()
+        customer_surname = request.form.get('customer_surname', '').strip()
+        # ... (të gjitha fushat që i ke)
+
+        start_date_str = request.form.get('start_date', '').strip()
+        end_date_str = request.form.get('end_date', '').strip()
+
+        # Validimet e zakonshme...
+
+        start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
+        end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
+
+        # Llogarit saktë ditët (nga data fillimit në përjashtim të datës përfundimtare)
+        days = (end_date - start_date).days  
+        if days <= 0:
+            flash('Data e përfundimit duhet të jetë pas datës së fillimit.', 'danger')
+            return redirect(url_for('main.car_detail', car_id=car_id))
+
+        # Kontroll rezervimesh në konflikt...
+
+        total_price = days * car.price_per_day
+
+        # Krijo rezervimin
+        new_reservation = Reservation(
+            car_id=car_id,
+            customer_name=customer_name,
+            customer_surname=customer_surname,
+            # ...
+            start_date=start_date,
+            end_date=end_date,
+            total_price=total_price,
+            status='confirmed'
+        )
+        db.session.add(new_reservation)
+        db.session.commit()
+
+        flash(f'Rezervimi u krye me sukses! Totali: {total_price:.2f} € për {days} ditë.', 'success')
+        return redirect(url_for('main.home'))
 
     return render_template('main/car_detail.html', car=car, reserved_dates=reserved_dates)
 

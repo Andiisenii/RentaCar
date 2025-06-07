@@ -7,7 +7,7 @@ migrate = Migrate()
 
 def create_app():
     app = Flask(__name__)
-    
+    app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'default-secret-key-ndersa-eshte-dev')
     # Përdor PostgreSQL nëse DATABASE_URL ekziston, përndryshe SQLite (për dev)
     database_url = os.environ.get('DATABASE_URL')
     if database_url:

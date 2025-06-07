@@ -73,6 +73,6 @@ def car_detail(car_id):
         db.session.commit()
 
         flash(f'Rezervimi u bë me sukses! Totali: {total_price} EUR', 'success')
-        return redirect(url_for('public.home'))
+        return redirect(url_for('main.home'))
 
     return render_template('public/car_detail.html', car=car)

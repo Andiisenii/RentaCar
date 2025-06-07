@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html lang="sq">
 <head>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
     <meta charset="UTF-8">
     <title>Rezervo - {{ car.brand }} {{ car.model }}</title>
     <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}" type="image/x-icon">
@@ -561,65 +564,52 @@
             <input type="text" name="customer_phone" required id="phonePlaceholder" placeholder="Shkruani numrin e telefonit">
         </div>
     
-        <form method="POST" action="/rezervo">
         <div class="date-time-section">
             <div class="date-time-group">
-                <label><i class="fas fa-calendar-day"></i> <span>Data Fillimit:</span></label>
+                <label><i class="fas fa-calendar-day"></i> <span id="startDateLabel">Data Fillimit:</span></label>
                 <div class="input-group date-input-group">
                     <i class="fas fa-calendar-day"></i>
-                    <input type="text" name="start_date" id="start_date" class="styled-date" required>
+                    <input type="date" name="start_date" id="start_date" class="styled-date" required>
+                    <button type="button" class="date-picker-btn" onclick="document.getElementById('start_date').showPicker()">
+                        <i class="fas fa-calendar-alt"></i>
+                    </button>
                 </div>
             </div>
-
+    
             <div class="date-time-group">
-                <label><i class="fas fa-clock"></i> <span>Ora e Marrjes:</span></label>
+                <label><i class="fas fa-clock"></i> <span id="pickupTimeLabel">Ora e Marrjes:</span></label>
                 <div class="input-group time-input-group">
                     <i class="fas fa-clock"></i>
                     <input type="time" name="pickup_time" class="styled-time" required>
+                    <button type="button" class="time-picker-btn" onclick="this.previousElementSibling.showPicker()">
+                        <i class="fas fa-clock"></i>
+                    </button>
                 </div>
             </div>
-
+    
             <div class="date-time-group">
-                <label><i class="fas fa-calendar-day"></i> <span>Data Përfundimit:</span></label>
+                <label><i class="fas fa-calendar-day"></i> <span id="endDateLabel">Data Përfundimit:</span></label>
                 <div class="input-group date-input-group">
                     <i class="fas fa-calendar-day"></i>
-                    <input type="text" name="end_date" id="end_date" class="styled-date" required>
+                    <input type="date" name="end_date" id="end_date" class="styled-date" required>
+                    <button type="button" class="date-picker-btn" onclick="document.getElementById('end_date').showPicker()">
+                        <i class="fas fa-calendar-alt"></i>
+                    </button>
                 </div>
             </div>
-
+    
             <div class="date-time-group">
-                <label><i class="fas fa-clock"></i> <span>Ora e Kthimit:</span></label>
+                <label><i class="fas fa-clock"></i> <span id="returnTimeLabel">Ora e Kthimit:</span></label>
                 <div class="input-group time-input-group">
                     <i class="fas fa-clock"></i>
                     <input type="time" name="return_time" class="styled-time" required>
+                    <button type="button" class="time-picker-btn" onclick="this.previousElementSibling.showPicker()">
+                        <i class="fas fa-clock"></i>
+                    </button>
                 </div>
             </div>
         </div>
-
-        <button type="submit">Rezervo</button>
-    </form>
-
-    <!-- Flatpickr JS -->
-    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-
-    <script>
-        // Datat e zëna që vijnë nga Flask (nga backend)
-        const reserved_Dates = {{ reserved_dates | safe }};
-
-        flatpickr("#start_date", {
-            dateFormat: "Y-m-d",
-            disable: reservedDates,
-            minDate: "today"
-        });
-
-        flatpickr("#end_date", {
-            dateFormat: "Y-m-d",
-            disable: reservedDates,
-            minDate: "today"
-        });
-    </script>
-</body>
-</html>
+        
     
         <div class="total-box animate__animated animate__fadeIn" id="total_price">
             <i class="fas fa-calculator"></i> <span id="totalText">Totali:</span> <span class="total-price">0.00 €</span>
@@ -1089,3 +1079,34 @@ input[type="date"]:disabled {
 </body>
 
 </html>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://code.jquery.com/ui/1.13.2/jquery-ui.min.js"></script>
+<link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+
+<script>
+$(function() {
+    var carId = {{ car.id }};  // Merr ID e makinës nga Flask
+
+    $.getJSON('/reserved_dates/' + carId, function(disabledDates) {
+        $("#start_date, #end_date").datepicker({
+            dateFormat: 'yy-mm-dd',
+            beforeShowDay: function(date) {
+                var d = $.datepicker.formatDate('yy-mm-dd', date);
+                if (disabledDates.indexOf(d) !== -1) {
+                    return [false, 'reserved-date', 'Data e zënë'];
+                }
+                return [true, '', ''];
+            },
+            minDate: 0
+        });
+    });
+});
+</script>
+
+<style>
+.reserved-date a {
+    background-color: #ff0000 !important;
+    color: white !important;
+}
+</style>

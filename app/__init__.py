@@ -13,6 +13,8 @@ migrate = Migrate()  # Shtojmë migratet
 def create_app():
     load_dotenv()  # ngarko env variables
     app = Flask(__name__)
+    app.config['SQLALCHEMY_ECHO'] = True
+    app.config['TEMPLATES_AUTO_RELOAD'] = True
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'sekreti')
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///db.sqlite3'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False

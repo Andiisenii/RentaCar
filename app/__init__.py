@@ -1,6 +1,5 @@
 import os
 from flask import Flask
-from app.routes_admin import admin as admin_blueprint
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 db = SQLAlchemy()
@@ -23,7 +22,9 @@ def create_app():
     migrate.init_app(app, db)  # <-- Kjo mungonte tek ti
 
     from app import models
+    from app.routes_admin import admin as admin_blueprint
     from app.routes import main
+    
     app.register_blueprint(main) 
     app.register_blueprint(admin_blueprint)
     return app

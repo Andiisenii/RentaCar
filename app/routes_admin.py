@@ -20,7 +20,6 @@ def dashboard():
 @admin.route('/add_car', methods=['GET', 'POST'])
 def add_car():
     if request.method == 'POST':
-        # Merr brand dhe model dhe krijo emrin e plotë
         brand = request.form.get('brand', '').strip()
         model = request.form.get('model', '').strip()
 
@@ -28,19 +27,15 @@ def add_car():
             flash('Brendi dhe modeli janë të detyrueshëm.', 'danger')
             return redirect(url_for('admin.add_car'))
 
-        name = f"{brand} {model}"
-
         # Përshkrimi
         description = request.form.get('description')
 
-        # Çmimi për ditë
         try:
             price_per_day = float(request.form.get('price_per_day'))
         except (ValueError, TypeError):
             flash('Çmimi për ditë duhet të jetë numër valid.', 'danger')
             return redirect(url_for('admin.add_car'))
 
-        # Opsionale ose me default
         try:
             fuel_level = float(request.form.get('fuel_level', 100.0))
         except (ValueError, TypeError):
@@ -52,27 +47,35 @@ def add_car():
             km_driven = 0
 
         fuel_type = request.form.get('fuel_type')
-        kilometers = request.form.get('kilometers')
         green_card_valid = request.form.get('green_card_valid') == 'true'
         production_year = request.form.get('production_year')
 
-        # Krijo objektin Car
+        # Mblidh variablat që mungojnë në kodin tënd
+        transmission = request.form.get('transmission', '').strip()
+        seats = request.form.get('seats', 0)
+        try:
+            seats = int(seats)
+        except (ValueError, TypeError):
+            seats = 0  # Default nëse nuk jepet një numër valid
+
+        # Krijo objektin Car me të gjitha fushat
         car = Car(
-        brand=brand,  # Përdor brand në vend të name
-        model=model,  # Shto model sepse është i nevojshëm
-        description=description,
-        price_per_day=price_per_day,
-        fuel_level=fuel_level,
-        km_driven=km_driven,
-        fuel_type=fuel_type,
-        green_card_valid=green_card_valid,  # Ndrysho nga green_card_year në green_card_valid
-        production_year=production_year
+            brand=brand,
+            model=model,
+            description=description,
+            price_per_day=price_per_day,
+            fuel_level=fuel_level,
+            km_driven=km_driven,
+            fuel_type=fuel_type,
+            green_card_valid=green_card_valid,
+            production_year=production_year,
+            transmission=transmission,
+            seats=seats
         )
 
         db.session.add(car)
-        db.session.commit()  # për të pasur car.id
+        db.session.commit()  # për të marrë car.id
 
-        # Ngarko imazhet nëse ekzistojnë
         if 'images' in request.files:
             images = request.files.getlist('images')
             upload_folder = os.path.join(current_app.root_path, 'static/uploads')

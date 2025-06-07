@@ -13,6 +13,8 @@ class Car(db.Model):
     brand = db.Column(db.String(100))
     model = db.Column(db.String(100), nullable=False)
     reservations = db.relationship('Reservation', backref='car', lazy=True)
+    transmission = db.Column(db.String(20))  
+    seats = db.Column(db.Integer)         
     
     # Relationships
     reservations = db.relationship('Reservation', backref='car', lazy=True)

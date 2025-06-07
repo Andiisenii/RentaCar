@@ -22,4 +22,7 @@ def create_app():
     migrate.init_app(app, db)  # <-- Kjo mungonte tek ti
 
     from app import models
+    from app.routes import main
+    app.register_blueprint(main) 
+
     return app

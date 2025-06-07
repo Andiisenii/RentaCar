@@ -1,8 +1,8 @@
-"""empty message
+"""Migrimi fillestar
 
-Revision ID: 7c2aa5db13b8
+Revision ID: 1c59e6d15efb
 Revises: 
-Create Date: 2025-06-07 20:48:11.820098
+Create Date: 2025-06-07 21:46:02.767220
 
 """
 from alembic import op
@@ -10,7 +10,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = '7c2aa5db13b8'
+revision = '1c59e6d15efb'
 down_revision = None
 branch_labels = None
 depends_on = None

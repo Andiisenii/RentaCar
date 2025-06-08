@@ -4,6 +4,8 @@ from app import db
 from datetime import datetime, timedelta
 from sqlalchemy.orm import joinedload
 import os
+from cloudinary.uploader import upload, destroy
+
 
 main = Blueprint('main', __name__)
 
@@ -111,33 +113,35 @@ def car_detail(car_id):
     return render_template('main/car_detail.html', car=car, reserved_dates=reserved_dates)
 
 # Fshij foto të makinës
-@main.route('/delete_image/<int:image_id>', methods=['POST'])
-def delete_image(image_id):
-    if request.method != 'POST':
-        abort(405)  # Method Not Allowed
-    
+@main.route('/admin/car/<int:car_id>/image/<int:image_id>/delete', methods=['POST'])
+def delete_car_image(car_id, image_id):
+    # 1. Merr foton nga DB
     image = CarImage.query.get_or_404(image_id)
-    car_id = image.car_id
-    
+
     try:
-        # Fshi foto nga sistemi i skedarëve
-        upload_folder = current_app.config['UPLOAD_FOLDER']
-        file_path = os.path.join(upload_folder, image.image_filename)
+        # 2. Fshi foton nga Cloudinary
+        if image.cloudinary_public_id:
+            destroy(image.cloudinary_public_id)
         
-        if os.path.exists(file_path):
-            os.remove(file_path)
-            current_app.logger.info(f'Fshihet foto: {file_path}')
+        # 3. Fshi foton nga sistemi lokal nëse ekziston (opsionale, nëse ruan lokal)
+        upload_folder = current_app.config.get('UPLOAD_FOLDER')
+        if upload_folder:
+            file_path = os.path.join(upload_folder, image.image_filename)
+            if os.path.exists(file_path):
+                os.remove(file_path)
+                current_app.logger.info(f'Fshihet foto lokale: {file_path}')
         
-        # Fshi nga databaza
+        # 4. Fshi rekordin nga DB
         db.session.delete(image)
         db.session.commit()
+
         flash('Fotoja u fshi me sukses!', 'success')
     except Exception as e:
         db.session.rollback()
-        current_app.logger.error(f'Gabim gjatë fshirjes: {str(e)}')
+        current_app.logger.error(f'Gabim gjatë fshirjes së fotos: {e}')
         flash('Gabim gjatë fshirjes së fotos', 'danger')
-    
-    return redirect(url_for('main.car_detail', car_id=car_id))
+
+    return redirect(url_for('admin.edit_car', car_id=car_id))
 @main.route('/reserved_dates/<int:car_id>')
 def reserved_dates(car_id):
     from app.models import Reservation

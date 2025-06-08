@@ -6,6 +6,7 @@ from app import db
 from app.models import Car, CarImage, Reservation
 from app.models import ReservationHistory
 import cloudinary
+from cloudinary.uploader import destroy, upload
 admin = Blueprint('admin', __name__, url_prefix='/admin')
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
@@ -137,30 +138,30 @@ def edit_car(car_id):
             images_to_delete = request.form.getlist('delete_images')
             for image_id in images_to_delete:
                 image = CarImage.query.get(image_id)
-                if image:
+                            # Fshij fotot ekzistuese nga Cloudinary
+            for image in car.images:
                     try:
-                        # Fshi fotot nga sistemi i skedarëve
-                        file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], image.image_filename)
-                        if os.path.exists(file_path):
-                            os.remove(file_path)
-                        # Fshi rekordin nga databaza
+                        public_id = image.image_filename.rsplit('.', 1)[0]
+                        destroy(public_id)
                         db.session.delete(image)
                     except Exception as e:
-                        current_app.logger.error(f'Gabim gjatë fshirjes së fotos: {e}')
+                        current_app.logger.error(f'Gabim gjatë fshirjes së fotos nga Cloudinary: {e}')
                         continue
 
-        # Upload new images
+        # Ngarko imazhe të reja në Cloudinary
         if 'images' in request.files:
             images = request.files.getlist('images')
-            upload_folder = current_app.config['UPLOAD_FOLDER']
-            os.makedirs(upload_folder, exist_ok=True)
-
-            for img in images:
-                if img and allowed_file(img.filename):
-                    filename = secure_filename(img.filename)
-                    img.save(os.path.join(upload_folder, filename))
-                    new_image = CarImage(car_id=car.id, image_filename=filename)
-                    db.session.add(new_image)
+    
+    for img in images:
+        if img and allowed_file(img.filename):
+            try:
+                result = upload(img)
+                public_id = result['public_id']
+                # Ose ruaje result['secure_url'] nëse do URL-në
+                new_image = CarImage(car_id=car.id, image_filename=public_id)
+                db.session.add(new_image)
+            except Exception as e:
+                current_app.logger.error(f'Gabim gjatë ngarkimit në Cloudinary: {e}')
 
         db.session.commit()
         flash('Makina u përditësua me sukses!', 'success')
@@ -274,28 +275,23 @@ def print_reservation(reservation_id):
     }
     return render_template('admin/print_reservation.html', reservation=reservation)
 
-admin.route('/admin/car/<int:car_id>/image/<int:image_id>/delete', methods=['POST'])
+@admin.route('/admin/car/<int:car_id>/image/<int:image_id>/delete', methods=['POST'])
 def delete_car_image(car_id, image_id):
     image = CarImage.query.get_or_404(image_id)
-    
-    # Fshi foton nga sistemi i skedarëve
+
+    # Fshi foton nga Cloudinary
     try:
-        os.remove(os.path.join(current_app.config['UPLOAD_FOLDER'], image.image_filename))
+        public_id = image.image_filename.rsplit('.', 1)[0]  # largon .jpg, .png etj.
+        destroy(public_id)
     except Exception as e:
-        flash('Gabim gjatë fshirjes së fotos', 'error')
-    
+        flash('Gabim gjatë fshirjes së fotos nga Cloudinary', 'error')
+
     # Fshi rekordin nga DB
     db.session.delete(image)
     db.session.commit()
-    
+
     flash('Fotoja u fshi me sukses', 'success')
     return redirect(url_for('admin.edit_car', car_id=car_id))
-
-@admin.route('/admin/history')
-def view_reservation_history():
-    history_entries = ReservationHistory.query.order_by(ReservationHistory.action_date.desc()).all()
-    return render_template('admin/history.html', history_entries=history_entries)
-
 
 # Login për admin
 @admin.route('/login', methods=['GET', 'POST'])

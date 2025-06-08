@@ -23,7 +23,7 @@ class Car(db.Model):
 class CarImage(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     car_id = db.Column(db.Integer, db.ForeignKey('car.id'), nullable=False)
-    image_filename = db.Column(db.String(255), nullable=False)
+    image_filename = db.Column(db.String, nullable=False)
 
     car = db.relationship('Car', back_populates='images')
 

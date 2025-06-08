@@ -452,7 +452,7 @@
 <div class="car-section">
     <div class="car-gallery">
         {% for image in car.images %}
-        <img src="{{ url_for('static', filename='uploads/' + image.image_filename) }}" alt="Foto e makinës" class="animate__animated animate__fadeIn">
+        <img src="{{ image.image_filename }}" alt="Foto e makinës" class="animate__animated animate__fadeIn">
         {% endfor %}
     </div>
     <div class="car-info">

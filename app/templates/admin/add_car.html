@@ -76,11 +76,18 @@
             {% endfor %}
         </select>
     </div>
-
     <div class="mb-3">
-        <label for="images" class="form-label">Ngarko Foto (multi-upload)</label>
-        <input type="file" class="form-control" id="images" name="images" multiple required />
-    </div>
+  <label for="images" class="form-label">Ngarko Foto (multi-upload)</label>
+  <input
+    type="file"
+    class="form-control"
+    id="images"
+    name="images"
+    multiple
+    required
+    accept="image/*"
+  />
+</div>
 
     <button type="submit" class="btn btn-primary">Shto</button>
 </form>

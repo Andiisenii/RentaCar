@@ -5,6 +5,7 @@ from werkzeug.utils import secure_filename
 from app import db
 from app.models import Car, CarImage, Reservation
 from app.models import ReservationHistory
+import cloudinary
 admin = Blueprint('admin', __name__, url_prefix='/admin')
 
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
@@ -76,19 +77,22 @@ def add_car():
         db.session.add(car)
         db.session.commit()  # për të marrë car.id
 
-        if 'images' in request.files:
-            images = request.files.getlist('images')
-            upload_folder = os.path.join(current_app.root_path, 'static/uploads')
-            os.makedirs(upload_folder, exist_ok=True)
+    if 'images' in request.files:
+        images = request.files.getlist('images')
 
-            for img in images:
-                if img and allowed_file(img.filename):
-                    filename = secure_filename(img.filename)
-                    img.save(os.path.join(upload_folder, filename))
+    for img in images:
+        if img and allowed_file(img.filename):
+            # Ngarko në Cloudinary
+            upload_result = cloudinary.uploader.upload(img)
 
-                    new_image = CarImage(car_id=car.id, image_filename=filename)
-                    db.session.add(new_image)
-            db.session.commit()
+            # Merr URL-në e fotos nga Cloudinary
+            image_url = upload_result.get('secure_url')
+
+            # Ruaj URL-në në databazë
+            new_image = CarImage(car_id=car.id, image_filename=image_url)
+            db.session.add(new_image)
+
+        db.session.commit()
 
         flash('Makina u shtua me sukses!', 'success')
         return redirect(url_for('admin.dashboard'))

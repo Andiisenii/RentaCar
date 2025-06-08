@@ -36,13 +36,6 @@ def about():
 def contact():
     return render_template('main/contact.html')
 
-# Detajet e makinës dhe rezervimi
-
-from flask import render_template, request, redirect, url_for, flash
-from datetime import datetime
-from app import db
-from app.models import Car, Reservation  # kontrollo që këto modele janë të importuara
-from . import main  # import blueprint-it tënd
 
 @main.route('/car/<int:car_id>', methods=['GET', 'POST'])
 def car_detail(car_id):

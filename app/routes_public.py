@@ -53,7 +53,7 @@ def car_detail(car_id):
 
         if existing_reservations:
             flash('Datat e rezervuara janë zënë. Ju lutem zgjidhni data të tjera.', 'danger')
-            return redirect(url_for('public.car_detail', car_id=car_id))
+            return redirect(url_for('main.car_detail', car_id=car_id))
 
         days = (end_date - start_date).days + 1
         total_price = days * car.price_per_day

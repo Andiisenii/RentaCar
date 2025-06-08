@@ -36,6 +36,7 @@ def about():
 def contact():
     return render_template('main/contact.html')
 
+# Detajet e makinës dhe rezervimi
 
 @main.route('/car/<int:car_id>', methods=['GET', 'POST'])
 def car_detail(car_id):
@@ -48,7 +49,7 @@ def car_detail(car_id):
         customer_license_number = request.form['customer_license_number']
         customer_email = request.form['customer_email']
         customer_phone = request.form['customer_phone']
-        date_range = request.form['date_range']  # Shembull: "2025-06-08 - 2025-06-10"
+        date_range = request.form['date_range']  # Shembull: "2025-06-08 to 2025-06-10"
 
         try:
             start_str, end_str = [d.strip() for d in date_range.split(' to ')]
@@ -97,17 +98,17 @@ def car_detail(car_id):
 
     # ✅ Merr të gjitha rezervimet ekzistuese për këtë veturë për t’i dërguar në template
     reservations = Reservation.query.filter_by(car_id=car_id).all()
-    reserved_dates = [
-        {
-            'start': r.start_date.strftime('%Y-%m-%d'),
-            'end': r.end_date.strftime('%Y-%m-%d')
-        }
-        for r in reservations
-    ]
+
+    # ✅ Krijo listën e të gjitha datave të zëna si string (p.sh. ['2025-06-08', '2025-06-09', ...])
+    reserved_dates = []
+    for r in reservations:
+        current = r.start_date
+        while current <= r.end_date:
+            reserved_dates.append(current.strftime('%Y-%m-%d'))
+            current += timedelta(days=1)
 
     # ✅ Dërgo edhe reserved_dates në template
     return render_template('main/car_detail.html', car=car, reserved_dates=reserved_dates)
-
 
 # Fshij foto të makinës
 @main.route('/delete_image/<int:image_id>', methods=['POST'])

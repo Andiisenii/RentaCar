@@ -14,8 +14,8 @@ def home():
 import re
 from flask import flash, redirect, url_for, request, render_template
 from datetime import datetime
-from yourapp.models import Car, Reservation
-from yourapp import db
+from app.models import Car, Reservation
+from app import db
 
 @public.route('/car/<int:car_id>', methods=['GET', 'POST'])
 def car_detail(car_id):
@@ -29,35 +29,22 @@ def car_detail(car_id):
         start_date_str = request.form['start_date']
         end_date_str = request.form['end_date']
 
-        # Kontroll bazik për email me regex të thjeshtë
-        email_pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
-        if not re.match(email_pattern, customer_email):
-            flash('Email-i nuk është në format të saktë.', 'danger')
-            return redirect(url_for('main.car_detail', car_id=car_id))
-
-        # Kontroll bazik për telefon (numra dhe +, -, hapësira)
-        phone_pattern = r'^[\d\s\+\-\(\)]+$'
-        if not re.match(phone_pattern, customer_phone):
-            flash('Numri i telefonit është i pasaktë.', 'danger')
-            return redirect(url_for('main.car_detail', car_id=car_id))
-
-        # Kontrollo nëse datat janë të dhëna dhe në formatin e saktë
+        # Kontroll nëse datat janë mbushur
         if not start_date_str or not end_date_str:
-            flash('Ju lutem zgjidhni datat e fillimit dhe përfundimit.', 'danger')
-            return redirect(url_for('main.car_detail', car_id=car_id))
+            flash('Ju lutem plotësoni të dy datat: fillimi dhe përfundimi.', 'danger')
+            return redirect(url_for('public.car_detail', car_id=car_id))
 
         try:
             start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
             end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
         except ValueError:
-            flash('Format datash është i gabuar.', 'danger')
-            return redirect(url_for('main.car_detail', car_id=car_id))
+            flash('Format datash është i gabuar. Ju lutem përdorni formatin YYYY-MM-DD.', 'danger')
+            return redirect(url_for('public.car_detail', car_id=car_id))
 
         if end_date < start_date:
             flash('Data e përfundimit duhet të jetë pas datës së fillimit.', 'danger')
-            return redirect(url_for('main.car_detail', car_id=car_id))
+            return redirect(url_for('public.car_detail', car_id=car_id))
 
-        # Kontrollo nëse datat janë të lira
         existing_reservations = Reservation.query.filter(
             Reservation.car_id == car_id,
             Reservation.end_date >= start_date,
@@ -66,9 +53,8 @@ def car_detail(car_id):
 
         if existing_reservations:
             flash('Datat e rezervuara janë zënë. Ju lutem zgjidhni data të tjera.', 'danger')
-            return redirect(url_for('main.car_detail', car_id=car_id))
+            return redirect(url_for('public.car_detail', car_id=car_id))
 
-        # Llogarit çmimin
         days = (end_date - start_date).days + 1
         total_price = days * car.price_per_day
 
@@ -76,8 +62,8 @@ def car_detail(car_id):
             car_id=car_id,
             customer_name=customer_name,
             customer_surname=customer_surname,
-            customer_id_number='',         # bosh, nëse nuk përdoret
-            customer_license_number='',    # bosh, nëse nuk përdoret
+            customer_id_number='',
+            customer_license_number='',
             customer_email=customer_email,
             customer_phone=customer_phone,
             start_date=start_date,

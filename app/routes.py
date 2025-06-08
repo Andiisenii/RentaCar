@@ -40,63 +40,64 @@ def contact():
 
 @main.route('/car/<int:car_id>', methods=['GET', 'POST'])
 def car_detail(car_id):
-    car = Car.query.options(joinedload(Car.images)).get_or_404(car_id)
-
-    # Merr rezervimet ekzistuese për kalendarin
-    reservations = Reservation.query.filter(
-        Reservation.car_id == car_id,
-        Reservation.status != 'cancelled'
-    ).all()
-
-    reserved_dates = []
-    for r in reservations:
-        current = r.start_date
-        while current <= r.end_date:
-            reserved_dates.append(current.strftime('%Y-%m-%d'))
-            current += timedelta(days=1)
+    car = Car.query.get_or_404(car_id)
 
     if request.method == 'POST':
-        # Merr të dhënat nga forma
-        customer_name = request.form.get('customer_name', '').strip()
-        customer_surname = request.form.get('customer_surname', '').strip()
-        # ... (të gjitha fushat që i ke)
+        customer_name = request.form['customer_name']
+        customer_surname = request.form['customer_surname']
+        customer_id_number = request.form['customer_id_number']
+        customer_license_number = request.form['customer_license_number']
+        customer_email = request.form['customer_email']
+        customer_phone = request.form['customer_phone']
+        date_range = request.form['date_range']  # Shembull: "2025-06-08 - 2025-06-10"
 
-        start_date_str = request.form.get('start_date', '').strip()
-        end_date_str = request.form.get('end_date', '').strip()
+        try:
+            # Ndaj datat me '-' dhe pastro hapësirat
+            start_str, end_str = [d.strip() for d in date_range.split('-')]
+            start_date = datetime.strptime(start_str, '%Y-%m-%d').date()
+            end_date = datetime.strptime(end_str, '%Y-%m-%d').date()
+        except Exception:
+            flash('Formati i datave është i pasaktë. Ju lutem zgjidhni datat sërish.', 'danger')
+            return redirect(url_for('main.car_detail', car_id=car_id))
 
-        # Validimet e zakonshme...
-
-        start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
-        end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
-
-        # Llogarit saktë ditët (nga data fillimit në përjashtim të datës përfundimtare)
-        days = (end_date - start_date).days  
-        if days <= 0:
+        if end_date < start_date:
             flash('Data e përfundimit duhet të jetë pas datës së fillimit.', 'danger')
             return redirect(url_for('main.car_detail', car_id=car_id))
 
-        # Kontroll rezervimesh në konflikt...
+        existing_reservations = Reservation.query.filter(
+            Reservation.car_id == car_id,
+            Reservation.end_date >= start_date,
+            Reservation.start_date <= end_date
+        ).all()
 
+        if existing_reservations:
+            flash('Këto data janë të zëna. Ju lutem provoni data të tjera.', 'danger')
+            return redirect(url_for('main.car_detail', car_id=car_id))
+
+        days = (end_date - start_date).days + 1
         total_price = days * car.price_per_day
 
-        # Krijo rezervimin
         new_reservation = Reservation(
             car_id=car_id,
             customer_name=customer_name,
             customer_surname=customer_surname,
-            # ...
+            customer_id_number=customer_id_number,
+            customer_license_number=customer_license_number,
+            customer_email=customer_email,
+            customer_phone=customer_phone,
             start_date=start_date,
             end_date=end_date,
             total_price=total_price,
             status='confirmed'
         )
+
         db.session.add(new_reservation)
         db.session.commit()
 
-        flash(f'Rezervimi u krye me sukses! Totali: {total_price:.2f} € për {days} ditë.', 'success')
+        flash(f'Rezervimi u bë me sukses! Totali: {total_price:.2f} EUR', 'success')
         return redirect(url_for('main.home'))
 
-    return render_template('main/car_detail.html', car=car, reserved_dates=reserved_dates)
+    return render_template('public/car_detail.html', car=car)
 
 # Fshij foto të makinës
 @main.route('/delete_image/<int:image_id>', methods=['POST'])

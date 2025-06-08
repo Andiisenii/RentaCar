@@ -3,6 +3,9 @@ from flask import Flask
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 import cloudinary
+import cloudinary.uploader
+import cloudinary.api
+
 db = SQLAlchemy()
 migrate = Migrate()
 

@@ -51,7 +51,7 @@ def car_detail(car_id):
         date_range = request.form['date_range']  # Shembull: "2025-06-08 - 2025-06-10"
 
         try:
-            start_str, end_str = [d.strip() for d in date_range.split('-')]
+            start_str, end_str = [d.strip() for d in date_range.split(' to ')]
             start_date = datetime.strptime(start_str, '%Y-%m-%d').date()
             end_date = datetime.strptime(end_str, '%Y-%m-%d').date()
         except Exception:

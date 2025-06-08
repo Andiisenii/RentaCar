@@ -22,12 +22,13 @@ def create_app():
 
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
+    
     cloudinary.config(
-        cloud_name=os.environ.get('dzgtfucjo'),
-        api_key=os.environ.get('929372342645252'),
-        api_secret=os.environ.get('8r8TJV1Zh92_jFi6sBOuOnN6mII'),
-        secure=True
-    )
+    cloud_name=os.environ.get('CLOUDINARY_CLOUD_NAME'),
+    api_key=os.environ.get('CLOUDINARY_API_KEY'),
+    api_secret=os.environ.get('CLOUDINARY_API_SECRET'),
+    secure=True
+)
 
     db.init_app(app)
     migrate.init_app(app, db)  # <-- Kjo mungonte tek ti

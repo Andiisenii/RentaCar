@@ -38,6 +38,12 @@ def contact():
 
 # Detajet e makinës dhe rezervimi
 
+from flask import render_template, request, redirect, url_for, flash
+from datetime import datetime
+from app import db
+from app.models import Car, Reservation  # kontrollo që këto modele janë të importuara
+from . import main  # import blueprint-it tënd
+
 @main.route('/car/<int:car_id>', methods=['GET', 'POST'])
 def car_detail(car_id):
     car = Car.query.get_or_404(car_id)
@@ -52,7 +58,6 @@ def car_detail(car_id):
         date_range = request.form['date_range']  # Shembull: "2025-06-08 - 2025-06-10"
 
         try:
-            # Ndaj datat me '-' dhe pastro hapësirat
             start_str, end_str = [d.strip() for d in date_range.split('-')]
             start_date = datetime.strptime(start_str, '%Y-%m-%d').date()
             end_date = datetime.strptime(end_str, '%Y-%m-%d').date()
@@ -97,7 +102,19 @@ def car_detail(car_id):
         flash(f'Rezervimi u bë me sukses! Totali: {total_price:.2f} EUR', 'success')
         return redirect(url_for('main.home'))
 
-    return render_template('main/car_detail.html', car=car)
+    # ✅ Merr të gjitha rezervimet ekzistuese për këtë veturë për t’i dërguar në template
+    reservations = Reservation.query.filter_by(car_id=car_id).all()
+    reserved_dates = [
+        {
+            'start': r.start_date.strftime('%Y-%m-%d'),
+            'end': r.end_date.strftime('%Y-%m-%d')
+        }
+        for r in reservations
+    ]
+
+    # ✅ Dërgo edhe reserved_dates në template
+    return render_template('main/car_detail.html', car=car, reserved_dates=reserved_dates)
+
 
 # Fshij foto të makinës
 @main.route('/delete_image/<int:image_id>', methods=['POST'])

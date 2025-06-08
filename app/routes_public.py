@@ -11,6 +11,11 @@ public = Blueprint('main', __name__)
 def home():
     cars = Car.query.all()
     return render_template('public/home.html', cars=cars)
+import re
+from flask import flash, redirect, url_for, request, render_template
+from datetime import datetime
+from yourapp.models import Car, Reservation
+from yourapp import db
 
 @public.route('/car/<int:car_id>', methods=['GET', 'POST'])
 def car_detail(car_id):
@@ -24,9 +29,23 @@ def car_detail(car_id):
         start_date_str = request.form['start_date']
         end_date_str = request.form['end_date']
 
-        # Optional: meqenëse nuk do numër letërnjoftimi dhe leje, i lëmë bosh ose hiqni këto nga modeli
+        # Kontroll bazik për email me regex të thjeshtë
+        email_pattern = r'^[\w\.-]+@[\w\.-]+\.\w+$'
+        if not re.match(email_pattern, customer_email):
+            flash('Email-i nuk është në format të saktë.', 'danger')
+            return redirect(url_for('main.car_detail', car_id=car_id))
 
-        # Kontroll datat në format datetime.date
+        # Kontroll bazik për telefon (numra dhe +, -, hapësira)
+        phone_pattern = r'^[\d\s\+\-\(\)]+$'
+        if not re.match(phone_pattern, customer_phone):
+            flash('Numri i telefonit është i pasaktë.', 'danger')
+            return redirect(url_for('main.car_detail', car_id=car_id))
+
+        # Kontrollo nëse datat janë të dhëna dhe në formatin e saktë
+        if not start_date_str or not end_date_str:
+            flash('Ju lutem zgjidhni datat e fillimit dhe përfundimit.', 'danger')
+            return redirect(url_for('main.car_detail', car_id=car_id))
+
         try:
             start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
             end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
@@ -53,14 +72,12 @@ def car_detail(car_id):
         days = (end_date - start_date).days + 1
         total_price = days * car.price_per_day
 
-        # Nëse nuk dëshiron të kërkosh nr. letërnjoftimi dhe leje drejtimi,
-        # duhet t'i hiqësh nga modeli ose i vendos me vlerë bosh ''
         new_reservation = Reservation(
             car_id=car_id,
             customer_name=customer_name,
             customer_surname=customer_surname,
-            customer_id_number='',         # bosh, ose vendos valid default
-            customer_license_number='',    # bosh, ose vendos valid default
+            customer_id_number='',         # bosh, nëse nuk përdoret
+            customer_license_number='',    # bosh, nëse nuk përdoret
             customer_email=customer_email,
             customer_phone=customer_phone,
             start_date=start_date,

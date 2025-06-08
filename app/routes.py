@@ -97,7 +97,7 @@ def car_detail(car_id):
         flash(f'Rezervimi u bë me sukses! Totali: {total_price:.2f} EUR', 'success')
         return redirect(url_for('main.home'))
 
-    return render_template('public/car_detail.html', car=car)
+    return render_template('main/car_detail.html', car=car)
 
 # Fshij foto të makinës
 @main.route('/delete_image/<int:image_id>', methods=['POST'])

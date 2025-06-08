@@ -32,18 +32,18 @@ def car_detail(car_id):
         # Kontroll nëse datat janë mbushur
         if not start_date_str or not end_date_str:
             flash('Ju lutem plotësoni të dy datat: fillimi dhe përfundimi.', 'danger')
-            return redirect(url_for('public.car_detail', car_id=car_id))
+            return redirect(url_for('main.car_detail', car_id=car_id))
 
         try:
             start_date = datetime.strptime(start_date_str, "%Y-%m-%d").date()
             end_date = datetime.strptime(end_date_str, "%Y-%m-%d").date()
         except ValueError:
             flash('Format datash është i gabuar. Ju lutem përdorni formatin YYYY-MM-DD.', 'danger')
-            return redirect(url_for('public.car_detail', car_id=car_id))
+            return redirect(url_for('main.car_detail', car_id=car_id))
 
         if end_date < start_date:
             flash('Data e përfundimit duhet të jetë pas datës së fillimit.', 'danger')
-            return redirect(url_for('public.car_detail', car_id=car_id))
+            return redirect(url_for('main.car_detail', car_id=car_id))
 
         existing_reservations = Reservation.query.filter(
             Reservation.car_id == car_id,
@@ -78,4 +78,4 @@ def car_detail(car_id):
         flash(f'Rezervimi u bë me sukses! Totali: {total_price} EUR', 'success')
         return redirect(url_for('main.home'))
 
-    return render_template('public/car_detail.html', car=car)
+    return render_template('main/car_detail.html', car=car)

@@ -23,7 +23,7 @@ class Car(db.Model):
 class CarImage(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     car_id = db.Column(db.Integer, db.ForeignKey('car.id'), nullable=False)
-    image_filename = db.Column(db.String, nullable=False)
+    cloudinary_url = db.Column(db.String(300), nullable=False)
 
     car = db.relationship('Car', back_populates='images')
 

@@ -20,18 +20,17 @@
         <div class="col-lg-4 col-md-6">
             <div class="card h-100 shadow-lg border-0 overflow-hidden animate__animated animate__fadeInUp" style="animation-delay: {{ loop.index * 0.1 }}s;">
                 <div class="car-image-container">
-                    {% if car.images and car.images|length > 0 %}
-                    <img src="{{ car.images[0].cloudinary_url }}" 
-                     class="card-img-top img-fluid car-image" 
-                        alt="{{ car.name }}"
-                            loading="lazy">
+                    {% if car.images and car.images[0].cloudinary_url %}
+                        <img src="{{ car.images[0].cloudinary_url }}"
+                            class="card-img-top img-fluid car-image"
+                                alt="{{ car.name }}"
+                                    loading="lazy">
                     {% else %}
-                    <img src="{{ image.image_filename }}"
-                        class="card-img-top img-fluid car-image" 
-                         alt="{{ car.name }}"
-                             loading="lazy">
+                        <img src="{{ url_for('static', filename='default_car.jpg') }}"
+                              class="card-img-top img-fluid car-image"
+                                 alt="{{ car.name }}"
+                                     loading="lazy">
                     {% endif %}
-
                     <div class="price-tag animate__animated animate__pulse animate__infinite animate__slower">
                         {{ car.price_per_day }} €/{% if session['lang'] == 'mk' %}ден{% elif session['lang'] == 'en' %}day{% else %}ditë{% endif %}
                     </div>

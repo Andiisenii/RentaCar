@@ -83,7 +83,7 @@ def add_car():
                     try:
                         upload_result = cloudinary.uploader.upload(img)
                         image_url = upload_result.get('secure_url')
-                        new_image = CarImage(car_id=car.id, image_filename=image_url)
+                        new_image = CarImage(car_id=car.id, cloudinary_url=image_url)
                         db.session.add(new_image)
                     except Exception as e:
                         current_app.logger.error(f'Gabim gjatë ngarkimit të fotos: {e}')
@@ -141,7 +141,7 @@ def edit_car(car_id):
                         try:
                             result = cloudinary.uploader.upload(img)
                             image_url = result.get('secure_url')
-                            new_image = CarImage(car_id=car.id, image_filename=image_url)
+                            new_image = CarImage(car_id=car.id, cloudinary_url=image_url)
                             db.session.add(new_image)
                         except Exception as e:
                             current_app.logger.error(f'Gabim gjatë ngarkimit të fotos: {e}')

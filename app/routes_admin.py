@@ -29,7 +29,6 @@ def add_car():
             flash('Brendi dhe modeli janë të detyrueshëm.', 'danger')
             return redirect(url_for('admin.add_car'))
 
-        # Përshkrimi
         description = request.form.get('description')
 
         try:
@@ -52,15 +51,13 @@ def add_car():
         green_card_valid = request.form.get('green_card_valid') == 'true'
         production_year = request.form.get('production_year')
 
-        # Mblidh variablat që mungojnë në kodin tënd
         transmission = request.form.get('transmission', '').strip()
         seats = request.form.get('seats', 0)
         try:
             seats = int(seats)
         except (ValueError, TypeError):
-            seats = 0  # Default nëse nuk jepet një numër valid
+            seats = 0
 
-        # Krijo objektin Car me të gjitha fushat
         car = Car(
             brand=brand,
             model=model,
@@ -76,24 +73,21 @@ def add_car():
         )
 
         db.session.add(car)
-        db.session.commit()  # për të marrë car.id
-
-    if 'images' in request.files:
-        images = request.files.getlist('images')
-
-    for img in images:
-        if img and allowed_file(img.filename):
-            # Ngarko në Cloudinary
-            upload_result = cloudinary.uploader.upload(img)
-
-            # Merr URL-në e fotos nga Cloudinary
-            image_url = upload_result.get('secure_url')
-
-            # Ruaj URL-në në databazë
-            new_image = CarImage(car_id=car.id, image_filename=image_url)
-            db.session.add(new_image)
-
         db.session.commit()
+
+        # Trajto fotot vetëm nëse janë dërguar
+        if 'images' in request.files:
+            images = request.files.getlist('images')
+            for img in images:
+                if img and allowed_file(img.filename):
+                    try:
+                        upload_result = cloudinary.uploader.upload(img)
+                        image_url = upload_result.get('secure_url')
+                        new_image = CarImage(car_id=car.id, image_filename=image_url)
+                        db.session.add(new_image)
+                    except Exception as e:
+                        current_app.logger.error(f'Gabim gjatë ngarkimit të fotos: {e}')
+            db.session.commit()
 
         flash('Makina u shtua me sukses!', 'success')
         return redirect(url_for('admin.dashboard'))
@@ -104,71 +98,63 @@ def add_car():
 @admin.route('/edit_car/<int:car_id>', methods=['GET', 'POST'])
 def edit_car(car_id):
     car = Car.query.get_or_404(car_id)
-    
+
     if request.method == 'POST':
         try:
-            # Përditëso të dhënat bazë të makinës
             car.brand = request.form.get('brand', car.brand)
             car.model = request.form.get('model', car.model)
             car.description = request.form.get('description', car.description)
             car.price_per_day = float(request.form.get('price_per_day', car.price_per_day))
             car.fuel_type = request.form.get('fuel_type', car.fuel_type)
             car.km_driven = float(request.form.get('km_driven', car.km_driven))
-            
-            # Trajto green_card_valid si boolean
+
             green_card_valid = request.form.get('green_card_valid')
-            car.green_card_valid = green_card_valid.lower() == 'true' if green_card_valid else car.green_card_valid
-            
+            if green_card_valid:
+                car.green_card_valid = green_card_valid.lower() == 'true'
+
             car.production_year = int(request.form.get('production_year', car.production_year))
-            
-            # Përditëso fuel_level nëse është dhënë
+
             fuel_level = request.form.get('fuel_level')
             if fuel_level is not None:
                 car.fuel_level = float(fuel_level)
-            
+
+            db.session.commit()
+
+            # Fshi fotot e selektuara
+            if 'delete_images' in request.form:
+                images_to_delete = request.form.getlist('delete_images')
+                for image_id in images_to_delete:
+                    image = CarImage.query.get(image_id)
+                    if image:
+                        try:
+                            public_id = image.image_filename.rsplit('.', 1)[0]
+                            cloudinary.uploader.destroy(public_id)
+                            db.session.delete(image)
+                        except Exception as e:
+                            current_app.logger.error(f'Gabim gjatë fshirjes së fotos: {e}')
+
+            # Ngarko imazhe të reja
+            if 'images' in request.files:
+                images = request.files.getlist('images')
+                for img in images:
+                    if img and allowed_file(img.filename):
+                        try:
+                            result = cloudinary.uploader.upload(img)
+                            image_url = result.get('secure_url')
+                            new_image = CarImage(car_id=car.id, image_filename=image_url)
+                            db.session.add(new_image)
+                        except Exception as e:
+                            current_app.logger.error(f'Gabim gjatë ngarkimit të fotos: {e}')
+
             db.session.commit()
             flash('Makina u përditësua me sukses!', 'success')
-            return redirect(url_for('main.car_detail', car_id=car.id))
-        
+            return redirect(url_for('admin.dashboard'))
+
         except (ValueError, KeyError) as e:
             db.session.rollback()
             flash(f'Gabim gjatë përditësimit: {str(e)}', 'danger')
-        # Fshi fotot e selektuara
-        if 'delete_images' in request.form:
-            images_to_delete = request.form.getlist('delete_images')
-            for image_id in images_to_delete:
-                image = CarImage.query.get(image_id)
-                            # Fshij fotot ekzistuese nga Cloudinary
-            for image in car.images:
-                    try:
-                        public_id = image.image_filename.rsplit('.', 1)[0]
-                        destroy(public_id)
-                        db.session.delete(image)
-                    except Exception as e:
-                        current_app.logger.error(f'Gabim gjatë fshirjes së fotos nga Cloudinary: {e}')
-                        continue
 
-        # Ngarko imazhe të reja në Cloudinary
-        if 'images' in request.files:
-            images = request.files.getlist('images')
-    
-    for img in images:
-        if img and allowed_file(img.filename):
-            try:
-                result = upload(img)
-                public_id = result['public_id']
-                # Ose ruaje result['secure_url'] nëse do URL-në
-                new_image = CarImage(car_id=car.id, image_filename=public_id)
-                db.session.add(new_image)
-            except Exception as e:
-                current_app.logger.error(f'Gabim gjatë ngarkimit në Cloudinary: {e}')
-
-        db.session.commit()
-        flash('Makina u përditësua me sukses!', 'success')
-        return redirect(url_for('admin.dashboard'))
-    
     return render_template('admin/edit_car.html', car=car)
-
 @admin.route('/delete_car/<int:car_id>')
 def delete_car(car_id):
     car = Car.query.get_or_404(car_id)

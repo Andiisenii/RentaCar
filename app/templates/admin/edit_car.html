@@ -77,7 +77,7 @@
                      style="height: 150px; width: 100%; object-fit: cover;">
                 
                 <!-- Butoni X për fshirje -->
-                <form method="POST" action="{{ url_for('main.delete_car_image', image_id=image.id) }}" style="position: absolute; top: 5px; right: 5px;">
+                <form method="POST" action="{{ url_for('admin.delete_car_image', car_id=car.id, image_id=image.id) }}" style="position: absolute; top: 5px; right: 5px;">
                     <button type="submit" class="btn btn-danger btn-sm rounded-circle" onclick="return confirm('A jeni i sigurt?')" style="width: 25px; height: 25px; padding: 0; line-height: 1;">
                         ×
                     </button>

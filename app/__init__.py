@@ -6,6 +6,7 @@ import cloudinary
 import cloudinary.uploader
 import cloudinary.api
 
+
 db = SQLAlchemy()
 migrate = Migrate()
 

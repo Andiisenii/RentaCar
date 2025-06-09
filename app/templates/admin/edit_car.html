@@ -72,7 +72,7 @@
         {% for image in car.images %}
         <div class="col-md-3 mb-4 position-relative" style="padding: 5px;">
             <div style="position: relative; display: inline-block;">
-                <img src="{{ url_for('static', filename='uploads/' + image.image_filename) }}" 
+                <img src="{{ image.cloudinary_url }}" alt="Car image"> 
                      class="img-thumbnail" 
                      style="height: 150px; width: 100%; object-fit: cover;">
                 

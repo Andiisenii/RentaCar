@@ -75,7 +75,7 @@ def car_detail(car_id):
             flash('Këto data janë të zëna. Ju lutem provoni data të tjera.', 'danger')
             return redirect(url_for('main.car_detail', car_id=car_id))
 
-        days = (end_date - start_date).days + 1
+        days = (end_date - start_date).days
         total_price = days * car.price_per_day
 
         new_reservation = Reservation(
